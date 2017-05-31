@@ -39,11 +39,8 @@ zip_matcher <- function(tablecode, year){
     FXCStats$zipcode <- zipcode
 
     #Importing the Master ZipCode File
-    M_FX_Zip <- rio::import("~/git/comm_fairfax/data/fairfaxZipcodes.txt")
-    M_FX_Zip <- data.frame(M_FX_Zip)
-    colnames(M_FX_Zip) <- "zipcode"
-    M_FX_Zip$zipcode <- as.character(M_FX_Zip$zipcode)
-    FXCStats$zipcode <- as.character(FXCStats$zipcode)
+    M_FX_Zip <- get_fairfax_zips()
+
 
     #Joining the two tables by ZipCode
     FX_Zip_Final <- M_FX_Zip %>% left_join(FXCStats, by = "zipcode")
@@ -56,7 +53,7 @@ fetch_fairfax_datatable <- function(tablecode, year)
     FX.VA<-geo.make(zip.code = "*")
 
      #Fetch the US zip code table for a given table code and year
-    FX.VA.TP<-acs.fetch(geography=FX.VA, endyear= year, table.number= tablecode, col.name"pretty")
+    FX.VA.TP<-acs.fetch(geography=FX.VA, endyear= year, table.number= tablecode, col.name ="pretty")
 
     #Create data table
     #May need to modify depending on table
@@ -64,10 +61,19 @@ fetch_fairfax_datatable <- function(tablecode, year)
 
     #Labelling rows with header 'zipcode
     FXCStats$zipcode <- row.names(FXCStats)
+    #Set zipcode to character string for comparison purposes
+    FXCStats$zipcode <- as.character(FXCStats$zipcode)
 
     return(FXCStats)
 }
 
+get_fairfax_zips <-function()
+{
+    M_FX_ZIP <- rio::import("~/git/comm_fairfax/data/fairfaxZipcodes.txt")
+    M_FX_Zip <- data.frame(M_FX_Zip)
+    colnames(M_FX_Zip) <- "zipcode"
+    M_FX_Zip$zipcode <- as.character(M_FX_Zip$zipcode)
+}
 
 
 #Population by Age Group and Sex
