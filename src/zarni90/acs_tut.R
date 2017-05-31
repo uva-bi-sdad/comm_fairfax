@@ -50,8 +50,43 @@ FXCStats$zipcode <- as.numeric(FXCStats$zipcode)
 
 #Joining the two tables by ZipCode
 library(dplyr)
-M_FX_Zip %>% inner_join(FXCStats, by = "zipcode")
+M_FX_Zip %>% left_join(FXCStats, by = "zipcode")
 
 
+zip_matcher <- function(tablecode){
+    #Get everything in zip code
+    FX.VA<-geo.make(zip.code = "*")
+    #Fetch the particular table
+    FX.VA.TP<-acs.fetch(geography=FX.VA, endyear=2015, table.number=tablecode, col.name="pretty")
+    #May need to modify depending on table
+    FXCStats<-data.frame(estimate(FX.VA.TP), round(standard.error(FX.VA.TP),0))
+    #I have deleted out the colnames. We can put them up when we need to.
+    #colnames(FXCStats)<-c("Total","SE.Total")
+    #Establishing Zipcode from Rownames
+    FXCStats$zipcode <- row.names(FXCStats)
+    FXCStats$zipcode
+    #Spliting the String part and the numeric part of Zipcode
+    zip_split <- str_split(FXCStats$zipcode, pattern = " ", n = 2)
+    zipcode <- sapply(zip_split, function(x) x[2])
+    FXCStats$zipcode <- zipcode
+    #Importing the Master ZipCode File
+    M_FX_Zip <- rio::import("~/git/comm_fairfax/data/fairfaxZipcodes.txt")
+    M_FX_Zip <- data.frame(M_FX_Zip)
+    colnames(M_FX_Zip) <- "zipcode"
+    M_FX_Zip$zipcode <- as.character(M_FX_Zip$zipcode)
+    FXCStats$zipcode <- as.character(FXCStats$zipcode)
+    #Joining the two tables by ZipCode
+    FX_Zip_Final <- M_FX_Zip %>% left_join(FXCStats, by = "zipcode")
+    return (FX_Zip_Final)
+}
+
+#Population by Age Group and Sex
+pop_age_group <- zip_matcher("B01003")
+write.csv(pop_age_group, file="~/git/comm_fairfax/data/comm_fairfax/working/Pop_Age_Group.csv")
+
+#Population by Race/Ethnicity
+pop_race_ethnicity <- zip_matcher("B03002")
+head(pop_race_ethnicity)
+write.csv(pop_race_ethnicity, file = "~/git/comm_fairfax/data/comm_fairfax/working/Pop_Race_Ethnicity.csv")
 
 
