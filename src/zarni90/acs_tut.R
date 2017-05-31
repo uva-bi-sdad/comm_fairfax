@@ -1,6 +1,8 @@
 library(acs)
+library(dplyr)
+library(stringr)
 
-
+#ARLINGTON CODE
 #create a geo.set() using the geo.make() function
 AC.VA<-geo.make(state="VA", county="Arlington", tract="*", block.group="*")
 #Geo Set
@@ -17,7 +19,8 @@ ACStats<-data.frame(estimate(AC.VA.TP), round(standard.error(AC.VA.TP),0))
 colnames(ACStats)<-c("Total","SE.Total")
 write.csv(ACStats, file="./AC.Stats.csv")
 
-#FairFax
+#FAIRFAX
+#THIS IS THE FAIRFAX CODE WITH THE B01003
 
 FX.VA<-geo.make(zip.code = "*")
 FX.VA.TP<-acs.fetch(geography=FX.VA, endyear=2015, table.number="B01003", col.name="pretty")
@@ -26,25 +29,26 @@ FXCStats<-data.frame(estimate(FX.VA.TP), round(standard.error(FX.VA.TP),0))
 colnames(FXCStats)<-c("Total","SE.Total")
 
 #Spliting the Stirng
-library("stringr")
 
+#Establishing Zipcode for Fairfax
 head(FXCStats)
 FXCStats$zipcode <- row.names(FXCStats)
 FXCStats$zipcode
 
+#Spliting the String part and the numeric part of Zipcode
 zip_split <- str_split(FXCStats$zipcode, pattern = " ", n = 2)
 zipcode <- sapply(zip_split, function(x) x[2])
 FXCStats$zipcode <- zipcode
-FXCStats
+#FXCStats
 
-M_FX_Zip <- rio::import("~/git/community_indicators/data/community_indicators/original/fairfaxZipcodes.txt")
+#Importing the Master ZipCode File
+M_FX_Zip <- rio::import("~/git/comm_fairfax/data/fairfaxZipcodes.txt")
 M_FX_Zip <- data.frame(M_FX_Zip)
 colnames(M_FX_Zip) <- "zipcode"
 M_FX_Zip$zipcode <- as.numeric(M_FX_Zip$zipcode)
 FXCStats$zipcode <- as.numeric(FXCStats$zipcode)
 
-
-
+#Joining the two tables by ZipCode
 library(dplyr)
 M_FX_Zip %>% inner_join(FXCStats, by = "zipcode")
 
