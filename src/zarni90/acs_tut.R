@@ -53,5 +53,32 @@ library(dplyr)
 M_FX_Zip %>% inner_join(FXCStats, by = "zipcode")
 
 
+zip_matcher <- function(tablecode){
+    #Get everything in zip code
+    FX.VA<-geo.make(zip.code = "*")
+    #Fetch the particular table
+    FX.VA.TP<-acs.fetch(geography=FX.VA, endyear=2015, table.number=tablecode, col.name="pretty")
+    #May need to modify depending on table
+    FXCStats<-data.frame(estimate(FX.VA.TP), round(standard.error(FX.VA.TP),0))
+    colnames(FXCStats)<-c("Total","SE.Total")
+    #Establishing Zipcode from Rownames
+    FXCStats$zipcode <- row.names(FXCStats)
+    FXCStats$zipcode
+    #Spliting the String part and the numeric part of Zipcode
+    zip_split <- str_split(FXCStats$zipcode, pattern = " ", n = 2)
+    zipcode <- sapply(zip_split, function(x) x[2])
+    FXCStats$zipcode <- zipcode
+    #Importing the Master ZipCode File
+    M_FX_Zip <- rio::import("~/git/comm_fairfax/data/fairfaxZipcodes.txt")
+    M_FX_Zip <- data.frame(M_FX_Zip)
+    colnames(M_FX_Zip) <- "zipcode"
+    M_FX_Zip$zipcode <- as.numeric(M_FX_Zip$zipcode)
+    FXCStats$zipcode <- as.numeric(FXCStats$zipcode)
+    #Joining the two tables by ZipCode
+    library(dplyr)
+    FX_Zip_Final <- M_FX_Zip %>% inner_join(FXCStats, by = "zipcode")
+    return (FX_Zip_Final)
+}
+
 
 
