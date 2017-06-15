@@ -12,6 +12,50 @@ library(osmar)
 library(ggmap)
 library(raster)
 library(rasterVis)
+library(data.table)
+library(RColorBrewer)
+library(sp)
+
+#HEATMAP FUNCTION FROM THE INTERNET
+# http://data-analytics.net/wp-content/uploads/2014/09/geo2.html
+heatMap <-function(data,shape=NULL,col="blue",main="Sample HeatMap"){
+    # Plots a Heat Map of a Polygons Data Frame.  This will
+    # demonstrate density within a finite set of polygons
+    #
+    # Args:
+    #   data:   Spatial Points dataframe
+    #   shape:  Polygons Data Frame
+    #
+    #
+    #   Notes:  This function requires the sp and RColorBrewer
+    #           Packages
+    #
+    #   Beskow: 03/28/11
+    #
+    is.installed <- function(mypkg) is.element(mypkg,
+                                               installed.packages()[,1])
+    if (is.installed(mypkg="sp")==FALSE)  {
+        stop("sp package is not installed")}
+    if (is.installed(mypkg="RColorBrewer")==FALSE)  {
+        stop("RColorBrewer package is not installed")}
+    if (!class(data)=="SpatialPointsDataFrame")  {
+        stop("data argument is not SpatialPointsDataFrame")}
+    require(sp)
+    require(RColorBrewer)
+    freq_table<-data.frame(tabulate(over(as(data,"SpatialPoints"),
+                                         as(shape,"SpatialPolygons")),nbins=length(shape)))
+    names(freq_table)<-"counts"
+
+    shape1<-spChFIDs(shape,as.character(1:length(shape)))
+    row.names(as(shape1,"data.frame"))
+    spdf<-SpatialPolygonsDataFrame(shape1, freq_table, match.ID = TRUE)
+
+    rw.colors<-colorRampPalette(c("white",col))
+    spplot(spdf,scales = list(draw = TRUE),
+           col.regions=rw.colors(max(freq_table)), main=main)
+}
+
+
 
 ##LOAD 17-27
 mgmap <- get_map(location=c(-77.7173, 38.5976, -76.8686, 39.0682), source = "google", color = "bw")
@@ -23,6 +67,8 @@ gmapb <- matrix(vgmaprgb[3, ], ncol = ncol(mgmap), nrow = nrow(mgmap))
 rgmaprgb <- brick(raster(gmapr), raster(gmapg), raster(gmapb))
 rm(gmapr, gmapg, gmapb)
 projection(rgmaprgb) <- CRS("+init=epsg:4326")
+proj4string(rgmaprgb) #Checking the Projection String
+
 extent(rgmaprgb) <- unlist(attr(gmap, which = "bb"))[c(2, 4, 1, 3)]
 rgmaprgb
 
@@ -49,15 +95,79 @@ county <- spTransform(county,rgmaprgb@crs)
 zip <- spTransform(zip,rgmaprgb@crs)
 
 #NEED TO LOAD THIS LINE
+#Transforming to the same CRS system and make it Spatial Points
+#In order to be plottable
 highSchool <- spTransform(highSchool, rgmaprgb@crs)
+colnames(highSchool@data)
+test <-(fortify(highSchool))
+test$group[1:10]
 
 ####STOP HERE AND YOU CAN DO: plot(highSchool)
 
-#OVERLAY PLOT
+#OVERLAY PLOT @ZNH
 par(mfrow=c(1,1))
 plot(highSchool, col = "red", main = "High School Boundary (red) \n vs Zipcode (green)")
 lines(zip, col = "green")
 
+#LOADING MENTAL HEALTH PROVIDERS
+mhp_clean <- rio::import("~/git/comm_fairfax/data/comm_fairfax/original/mhp_clean.csv")
+long_lat_mhp <- SpatialPoints(cbind(Long=as.numeric(mhp_clean$longitude), Lat=as.numeric(mhp_clean$latitude)))
+long_lat_mhp_frame <- SpatialPointsDataFrame(cbind(lon = as.numeric(mhp_clean$longitude), lat = as.numeric(mhp_clean$latitude)),data = mhp_clean)
+proj4string(long_lat_mhp_frame) <- proj4string(highSchool)
+
+
+crime$lon
+mhp_clean$longitude
+
+length(long_lat_mhp)
+#long_lat_mhp@coords[,1]
+
+#CREATE COORDINATE REFERENCE SYSTEM
+crs.geo <- CRS("+init=epsg:4326")
+proj4string(long_lat_mhp) <- crs.geo
+
+#OVERLAY & COUNT
+nrow(highSchool@data)
+highSchool@data$
+#Gives Associated Polygon for each Spatial Point
+sch_with_mhp <- as.data.table(over(long_lat_mhp,highSchool))
+mhp_per_sch <- sch_with_mhp[,.N,OBJECTID]
+mhp_per_sch <- mhp_per_sch %>% left_join(highSchool@data, by = c("OBJECTID", "OBJECTID"))
+highSchool_count <- highSchool %>% left_join(mhp_per_sch, by = c("OBJECTID","OBJECTID"))
+
+length(mhp_per_sch$OBJECTID)
+highSchool_count <- fortify(highSchool)
+length(unique(highSchool_count$id))
+
+
+mhp_per_sch$
+
+
+nrow(mhp_per_sch)
+View(mhp_per_sch)
+#Histogram in GGPLOT
+#Things to modify
+#1 Make the counts disecrete
+#2 Title the Graph
+#3 Label the X-Axis
+ggplot(data = mhp_per_sch, aes (x=SCHOOL_NAM, y = N)) +
+    geom_bar(stat = "identity") +
+    theme(axis.text.x = element_text(angle=90, hjust =1, vjust=0.5, size = 7.5))
+
+
+#Plotting the High School Map
+
+plot(highSchool, asp = 1, main = "Mental Health Providers \n within High School Boundary")
+points(mhp_clean$longitude, mhp_clean$latitude, pty =16, cex = 0.25, col = "red")
+
+#WANT A HEAT MAP (IGNORES THE SCHOOL THAT HAS ZERO ASSIGN)
+
+
+
+highSchool@data$
+#SCHOOLS THAT DO NOT HAVE MENTAL HEALTH PROVIDERS
+names(highSchool)
+heatmap(mhp)
 
 # see if I can plot something...
 zip@data$id = rownames(zip@data)
