@@ -89,4 +89,50 @@ pop_race_ethnicity <- zip_matcher("B03002")
 head(pop_race_ethnicity)
 write.csv(pop_race_ethnicity, file = "~/git/comm_fairfax/data/comm_fairfax/working/Pop_Race_Ethnicity.csv")
 
+#Population insured by Medicaid
+pop_insured_medicaid <- zip_matcher("B27010")
+head(pop_insured_medicaid)
+write.csv(pop_insured_medicaid, file = "~/git/comm_fairfax/data/comm_fairfax/working/pop_insured_medicaid.csv")
+
+#Population by Poverty Status
+pop_poverty_status <- zip_matcher("B17021")
+head(pop_poverty_status)
+write.csv(pop_poverty_status, file = "~/git/comm_fairfax/data/comm_fairfax/working/pop_poverty_status.csv")
+
+#Household burden (Renters)
+household_burden_renters <- zip_matcher("B25070")
+head(household_burden_renters)
+write.csv(household_burden_renters, file = "~/git/comm_fairfax/data/comm_fairfax/working/household_burden_renters.csv")
+
+#Household burden (Owners)
+household_burden_owners <- zip_matcher("B25091")
+head(household_burden_owners)
+write.csv(household_burden_owners, file = "~/git/comm_fairfax/data/comm_fairfax/working/household_burden_owners.csv")
+
+#Households with no vehicle
+household_no_vehicle <- zip_matcher("B25044")
+head(household_no_vehicle)
+write.csv(household_no_vehicle, file = "~/git/comm_fairfax/data/comm_fairfax/working/household_no_vehicle.csv")
+
+#Familes w/ Children below Poverty
+familes_children_below_poverty <- zip_matcher("B17010")
+head(familes_children_below_poverty)
+write.csv(familes_children_below_poverty, file = "~/git/comm_fairfax/data/comm_fairfax/working/familes_children_below_poverty.csv")
+
+#Households below poverty
+household_below_poverty <- zip_matcher("B17017")
+head(household_below_poverty)
+write.csv(household_below_poverty, file = "~/git/comm_fairfax/data/comm_fairfax/working/household_below_poverty.csv")
+
+#Households receiving SNAP
+household_receiving_snap <- zip_matcher("B22010")
+head(household_receiving_snap)
+write.csv(household_receiving_snap, file = "~/git/comm_fairfax/data/comm_fairfax/working/household_receiving_snap.csv")
+
+#Populations by English proficiency
+pop_eng_proficiency <- zip_matcher("B16004")
+head(pop_eng_proficiency)
+write.csv(pop_eng_proficiency, file = "~/git/comm_fairfax/data/comm_fairfax/working/pop_eng_proficiency.csv")
+
+
 
