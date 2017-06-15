@@ -150,11 +150,18 @@ View(mhp_per_sch)
 #1 Make the counts disecrete
 #2 Title the Graph
 #3 Label the X-Axis
-ggplot(data = mhp_per_sch, aes (x=SCHOOL_NAM, y = N)) +
+ggplot(data = mhp_per_sch, aes (x=SCHOOL_NAM.x, y = N, fill = N)) +
     geom_bar(stat = "identity") +
-    theme(axis.text.x = element_text(angle=90, hjust =1, vjust=0.5, size = 7.5))
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle=90, hjust =1, vjust=0.5, size = 7.5), panel.grid.major = NULL) + ggtitle("Count of Mental Health Providers by High School Pyramid") +
+    labs(y= "Number of Mental Health Providers", x = "High School Name") +
+    scale_y_discrete(limits=1:10, labels = 1:10) +
+    scale_fill_gradient2(low = '#d8b365', mid = '#808080', high = '#5ab4ac', midpoint = 5)
 
 
+#d8b365
+#f5f5f5
+#5ab4ac
 #Plotting the High School Map
 
 plot(highSchool, asp = 1, main = "Mental Health Providers \n within High School Boundary")
