@@ -9,6 +9,7 @@ data <- data %>% filter(Beat %in% goodbeats)
 
 # only need region column
 data_beat <- data$Beat
+data$Beat
 
 # get the counts by region
 aggregated_beats <- aggregate(data_beat,
@@ -19,6 +20,7 @@ aggregated_beats
 # reassign column names so that column 1 matches the column name in your *edited* shapefile
 colnames(aggregated_beats) <- c("beat_num", "count")
 
+aggregated_beats
 # load edited shapefile
 beat_polygon <- read.csv("~/sdal/projects/arlington911/data/working/police/BeatShapefile_Edited.csv")
 names(beat_polygon)

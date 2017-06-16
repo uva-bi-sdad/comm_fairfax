@@ -1,0 +1,161 @@
+---
+title: "Week 4 Presentation"
+author: "FairFax Team"
+date: "6/15/2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(rgdal)
+library(maptools)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(tidyr)
+library(reshape2)
+library(scales)
+#library(OpenStreetMap)
+library(osmar)
+library(ggmap)
+library(raster)
+#library(rasterVis)
+library(data.table)
+library(RColorBrewer)
+library(sp)
+```
+
+###Getting the Fairfax map
+
+We need to convert it to Raster Brick Layer
+https://rpubs.com/alobo/getmapCRS
+```{r}
+mgmap <- get_map(location=c(-77.7173, 38.5976, -76.8686, 39.0682), source = "google", color = "bw")
+vgmap <- as.vector(mgmap)
+vgmaprgb <- col2rgb(vgmap)
+gmapr <- matrix(vgmaprgb[1, ], ncol = ncol(mgmap), nrow = nrow(mgmap))
+gmapg <- matrix(vgmaprgb[2, ], ncol = ncol(mgmap), nrow = nrow(mgmap))
+gmapb <- matrix(vgmaprgb[3, ], ncol = ncol(mgmap), nrow = nrow(mgmap))
+rgmaprgb <- brick(raster(gmapr), raster(gmapg), raster(gmapb))
+rm(gmapr, gmapg, gmapb)
+projection(rgmaprgb) <- CRS("+init=epsg:4326")
+proj4string(rgmaprgb) #Checking the Projection String
+extent(rgmaprgb) <- unlist(attr(mgmap, which = "bb"))[c(2, 4, 1, 3)]
+rgmaprgb
+```
+
+Getting GIS data for County, School and Zip
+```{r warning=FALSE}
+
+setwd("~/sdal/projects/limbo/fairfax_alerts/")
+#County Shape File
+county <- readShapePoly("GISData/Fairfax_County_Border/Fairfax_County_Border.shp",
+                        proj4string=CRS('+proj=longlat +ellps=WGS84'))
+#Zip Shape File
+zip <- readShapePoly("GISData/ZIP_Codes/ZIP_Codes.shp",
+                     proj4string=CRS('+proj=longlat +ellps=WGS84'))
+
+#High School Shape File
+highSchool <- readShapePoly("GISData/High_School_Pyramids/High_School_Attendance_Areas.shp",
+                            proj4string=CRS('+proj=longlat +ellps=WGS84'))
+
+#Convert Everything to the coordinate system for the raster map
+county <- spTransform(county,rgmaprgb@crs)
+zip <- spTransform(zip,rgmaprgb@crs)
+highSchool <- spTransform(highSchool, rgmaprgb@crs)
+```
+
+### Plotting School and Zip code boundaries
+
+```{r}
+par(mfrow=c(1,1))
+plot(highSchool, col = "red", main = "High School Boundary (red) \n vs Zipcode (green)")
+lines(zip, col = "green")
+```
+
+###Mental Health Providers
+
+Facilty appears to have the same name but different services and at times
+different locations but, at other times, same location. Need to look through
+and decide how we will count these mental health providers.
+```{r}
+mhp_clean <- rio::import("~/git/comm_fairfax/data/comm_fairfax/original/mhp_clean.csv")
+#Data Duplication: How to clean this up. 
+mhp_clean[7:10,]
+```
+We will look into other sources of mental health providers as well.
+
+Converting MentalHealth To Spatial Data
+```{r}
+long_lat_mhp <- SpatialPoints(cbind(Long=as.numeric(mhp_clean$longitude), Lat=as.numeric(mhp_clean$latitude)))
+long_lat_mhp_frame <- SpatialPointsDataFrame(cbind(lon = as.numeric(mhp_clean$longitude), lat = as.numeric(mhp_clean$latitude)),data = mhp_clean)
+proj4string(long_lat_mhp_frame) <- proj4string(highSchool)
+crs.geo <- CRS("+init=epsg:4326")
+proj4string(long_lat_mhp) <- crs.geo
+
+```
+
+Overlay & Count
+```{r}
+#OVERLAY & COUNT
+nrow(highSchool@data)
+#Gives Associated Polygon for each Spatial Point
+sch_with_mhp <- as.data.table(over(long_lat_mhp,highSchool))
+mhp_per_sch <- sch_with_mhp[,.N,OBJECTID]
+mhp_per_sch <- mhp_per_sch %>% left_join(highSchool@data, by = c("OBJECTID", "OBJECTID"))
+highSchool_count <- highSchool@data %>% left_join(mhp_per_sch, by = c("OBJECTID","OBJECTID"))
+```
+
+### Plotting Mental Health Providers into High School Pyramid Regions
+
+```{r}
+plot(highSchool, asp = 1, main = "Mental Health Providers \n within High School Boundary")
+points(mhp_clean$longitude, mhp_clean$latitude, pty =16, cex = 0.25, col = "red")
+```
+
+### Mental Health Provider by High School Pyramid
+```{r warning ='hide', message = 'hide'}
+plt <- ggplot(data = mhp_per_sch, aes (x=SCHOOL_NAM, y = N, fill = N)) +
+    geom_bar(stat = "identity") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle=90, hjust =1, vjust=0.5, size = 7.5), panel.grid.major = NULL) + ggtitle("Count of Mental Health Providers \n by High School Pyramid") +
+    labs(y= "Number of Mental \n Health Providers", x = "High School Name") +
+    scale_y_discrete(limits=1:10, labels = 1:10) +
+    scale_fill_gradient2(low = '#d8b365', mid = '#808080', high = '#5ab4ac', midpoint = 5)
+suppressWarnings(print(plt))
+```
+
+### HeatMap 
+```{r}
+#Based on Bianica's Code
+highSchool@data$id <- rownames(highSchool@data)
+highSchool.points <- fortify(highSchool)
+highSchool.df <- left_join(highSchool.points, highSchool@data, by = "id")
+highSchool.df <- left_join(highSchool.df, mhp_per_sch, by = "OBJECTID")
+
+plt <-ggplot(highSchool) + 
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID, fill = N), color = "red") + labs(title = "Mental Health Providers Heat Map \n by High School Pyramid") 
+suppressWarnings(print(plt))
+```
+###Which High School Pyramids do not have Mental Health Providers
+
+8 High School Pyramids. 7 on the map? Where goes the missing one? :(
+```{r}
+nrow(highSchool@data[!(highSchool@data$SCHOOL_NAM %in% mhp_per_sch$SCHOOL_NAM),])
+```
+
+### High School Pyramids with no Mental Health Providers
+```{r}
+schools <- highSchool@data[!(highSchool@data$SCHOOL_NAM %in% mhp_per_sch$SCHOOL_NAM),]
+nrow(schools)
+schools$SCHOOL_NAM
+```
+
+
+
+
