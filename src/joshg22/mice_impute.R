@@ -1,6 +1,6 @@
-# impute for renters:
+# impute for Arlington renters:
 #   household income, #bedrooms (partial), rent
-# observed in CL:
+# observed in CoreLogic tax records:
 #   water flag, #bedrooms (partial)
 
 # imputation methods:
@@ -15,7 +15,15 @@ library(mice)
 library(dplyr)
 
 setwd("/home/sdal/projects/hud_census/analysis/Josh/synthetic population/person variables/")
+
+# read in prepared data
 load("cleaned_renters.RData")
+
+# bedroom_marginal: ACS block group distribution on the number of bedrooms
+# income_marignal:  ACS block group distribution of household income
+# rent_marginal:    ACS block group distribution of monthly rent
+# CLdata:           Arlington selected housing data
+# PUMS:             Arlington 2014 PUMS data
 
 # -----------------------------------------------------------------------
 # topcode #bedrooms in PUMS to 4; this is the max in CoreLogic
