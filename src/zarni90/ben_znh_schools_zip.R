@@ -7,7 +7,7 @@ library(lubridate)
 library(tidyr)
 library(reshape2)
 library(scales)
-library(OpenStreetMap)
+#library(OpenStreetMap)
 library(osmar)
 library(ggmap)
 library(raster)
@@ -16,48 +16,11 @@ library(data.table)
 library(RColorBrewer)
 library(sp)
 
-#HEATMAP FUNCTION FROM THE INTERNET
-# http://data-analytics.net/wp-content/uploads/2014/09/geo2.html
-heatMap <-function(data,shape=NULL,col="blue",main="Sample HeatMap"){
-    # Plots a Heat Map of a Polygons Data Frame.  This will
-    # demonstrate density within a finite set of polygons
-    #
-    # Args:
-    #   data:   Spatial Points dataframe
-    #   shape:  Polygons Data Frame
-    #
-    #
-    #   Notes:  This function requires the sp and RColorBrewer
-    #           Packages
-    #
-    #   Beskow: 03/28/11
-    #
-    is.installed <- function(mypkg) is.element(mypkg,
-                                               installed.packages()[,1])
-    if (is.installed(mypkg="sp")==FALSE)  {
-        stop("sp package is not installed")}
-    if (is.installed(mypkg="RColorBrewer")==FALSE)  {
-        stop("RColorBrewer package is not installed")}
-    if (!class(data)=="SpatialPointsDataFrame")  {
-        stop("data argument is not SpatialPointsDataFrame")}
-    require(sp)
-    require(RColorBrewer)
-    freq_table<-data.frame(tabulate(over(as(data,"SpatialPoints"),
-                                         as(shape,"SpatialPolygons")),nbins=length(shape)))
-    names(freq_table)<-"counts"
-
-    shape1<-spChFIDs(shape,as.character(1:length(shape)))
-    row.names(as(shape1,"data.frame"))
-    spdf<-SpatialPolygonsDataFrame(shape1, freq_table, match.ID = TRUE)
-
-    rw.colors<-colorRampPalette(c("white",col))
-    spplot(spdf,scales = list(draw = TRUE),
-           col.regions=rw.colors(max(freq_table)), main=main)
-}
-
-
 
 ##LOAD 17-27
+## From the internet to make Raster Maps from Lat Long Rectangle
+## @BEN: Fill in the source here
+
 mgmap <- get_map(location=c(-77.7173, 38.5976, -76.8686, 39.0682), source = "google", color = "bw")
 vgmap <- as.vector(mgmap)
 vgmaprgb <- col2rgb(vgmap)
@@ -65,12 +28,20 @@ gmapr <- matrix(vgmaprgb[1, ], ncol = ncol(mgmap), nrow = nrow(mgmap))
 gmapg <- matrix(vgmaprgb[2, ], ncol = ncol(mgmap), nrow = nrow(mgmap))
 gmapb <- matrix(vgmaprgb[3, ], ncol = ncol(mgmap), nrow = nrow(mgmap))
 rgmaprgb <- brick(raster(gmapr), raster(gmapg), raster(gmapb))
+class(rgmaprgb)
+rgmaprgb
 rm(gmapr, gmapg, gmapb)
+#Here, we are the CRS for the empty raster from above.
 projection(rgmaprgb) <- CRS("+init=epsg:4326")
 proj4string(rgmaprgb) #Checking the Projection String
 
-extent(rgmaprgb) <- unlist(attr(gmap, which = "bb"))[c(2, 4, 1, 3)]
+##MAY NOT NEED THE CODE BELOW
+extent(rgmaprgb) <- unlist(attr(mgmap, which = "bb"))[c(2, 4, 1, 3)]
+unlist(attr(mgmap, which = "bb")[c(2,4,1,3)])
+attr(mgmap, which = "bb")
 rgmaprgb
+##MAY NOT NEED THE CODE ABOVE
+
 
 ### get map from openstreetmap
 #mp <- openmap(c(39.0682,-77.7173),c(38.5976,-76.8686),type='osm')
@@ -100,23 +71,30 @@ zip <- spTransform(zip,rgmaprgb@crs)
 highSchool <- spTransform(highSchool, rgmaprgb@crs)
 colnames(highSchool@data)
 test <-(fortify(highSchool))
+
 test$group[1:10]
 
 ####STOP HERE AND YOU CAN DO: plot(highSchool)
 
 #OVERLAY PLOT @ZNH
+#It divides the plot area by (row x column) however many u want
 par(mfrow=c(1,1))
 plot(highSchool, col = "red", main = "High School Boundary (red) \n vs Zipcode (green)")
 lines(zip, col = "green")
 
+
 #LOADING MENTAL HEALTH PROVIDERS
 mhp_clean <- rio::import("~/git/comm_fairfax/data/comm_fairfax/original/mhp_clean.csv")
+
+#The spatial points is for putting in the mental health providers into the map
 long_lat_mhp <- SpatialPoints(cbind(Long=as.numeric(mhp_clean$longitude), Lat=as.numeric(mhp_clean$latitude)))
+#The spatial data frame is for the Heat
 long_lat_mhp_frame <- SpatialPointsDataFrame(cbind(lon = as.numeric(mhp_clean$longitude), lat = as.numeric(mhp_clean$latitude)),data = mhp_clean)
+#On the same coordinate reference system as highSchool/or your plot Map
 proj4string(long_lat_mhp_frame) <- proj4string(highSchool)
 
 
-crime$lon
+#crime$lon
 mhp_clean$longitude
 
 length(long_lat_mhp)
@@ -128,20 +106,32 @@ proj4string(long_lat_mhp) <- crs.geo
 
 #OVERLAY & COUNT
 nrow(highSchool@data)
-highSchool@data$
 #Gives Associated Polygon for each Spatial Point
+#
 sch_with_mhp <- as.data.table(over(long_lat_mhp,highSchool))
+names(sch_with_mhp)
+head(sch_with_mhp)
 mhp_per_sch <- sch_with_mhp[,.N,OBJECTID]
+mhp_per_sch
+#Why are we joining here?
+#Joining to get additonal high school information
 mhp_per_sch <- mhp_per_sch %>% left_join(highSchool@data, by = c("OBJECTID", "OBJECTID"))
-highSchool_count <- highSchool %>% left_join(mhp_per_sch, by = c("OBJECTID","OBJECTID"))
+mhp_per_sch[1:3,]
+nrow(mhp_per_sch)
+#Have all the high schools preserved.
+highSchool_count <- highSchool@data %>% left_join(mhp_per_sch, by = c("OBJECTID","OBJECTID"))
+nrow(highSchool_count)
 
 length(mhp_per_sch$OBJECTID)
+
+#This converts the polygon object to a dataframe that includes all the points that would the 25 high school polygons
 highSchool_count <- fortify(highSchool)
+
+names(highSchool_count)
+nrow(highSchool_count)
+
+#25 unique objects here
 length(unique(highSchool_count$id))
-
-
-mhp_per_sch$
-
 
 nrow(mhp_per_sch)
 View(mhp_per_sch)
@@ -150,7 +140,8 @@ View(mhp_per_sch)
 #1 Make the counts disecrete
 #2 Title the Graph
 #3 Label the X-Axis
-ggplot(data = mhp_per_sch, aes (x=SCHOOL_NAM.x, y = N, fill = N)) +
+head(mhp_per_sch)
+ggplot(data = mhp_per_sch, aes (x=SCHOOL_NAM, y = N, fill = N)) +
     geom_bar(stat = "identity") +
     theme_minimal() +
     theme(axis.text.x = element_text(angle=90, hjust =1, vjust=0.5, size = 7.5), panel.grid.major = NULL) + ggtitle("Count of Mental Health Providers by High School Pyramid") +
@@ -165,20 +156,22 @@ ggplot(data = mhp_per_sch, aes (x=SCHOOL_NAM.x, y = N, fill = N)) +
 #Plotting the High School Map
 
 plot(highSchool, asp = 1, main = "Mental Health Providers \n within High School Boundary")
-points(mhp_clean$longitude, mhp_clean$latitude, pty =16, cex = 0.25, col = "red")
+points(mhp_clean$longitude, mhp_clean$latitude, pty = 16, cex = 0.25, col = "red")
+#Sb will figure out what the hell is wrong with pty and cex above?
 
 #WANT A HEAT MAP (IGNORES THE SCHOOL THAT HAS ZERO ASSIGN)
 
-
-
-highSchool@data$
-#SCHOOLS THAT DO NOT HAVE MENTAL HEALTH PROVIDERS
-names(highSchool)
-heatmap(mhp)
-
-# see if I can plot something...
+#This is Zip Polygon of all Fairfax County Zipcodes
+#IGNORE ALL THIS BELOW. IT"S IN MARKDOWN
+#Data of the zip polygon file
+names(zip@data)
+zip@polygons
 zip@data$id = rownames(zip@data)
+nrow(zip@data)
+#this breaksdown the zip polygon into a data frame. This code is from Bianica
 zip.points = fortify(zip, region="id")
+names(zip.points)
+
 zip.df2 = left_join(zip.points, zip@data, by="id")
 
 
@@ -186,6 +179,10 @@ zip.df2 = left_join(zip.points, zip@data, by="id")
 highSchool@data$id = rownames(highSchool@data)
 highSchool.points = fortify(highSchool, region="id")
 highSchool.df2 = left_join(highSchool.points, highSchool@data, by="id")
+
+
+
+
 
 # import acs data
 acs<-read.csv("ACSData/ACSData_Fairfax_Zipcodesv2.csv")
