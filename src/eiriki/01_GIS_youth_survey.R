@@ -64,14 +64,19 @@ youth_results <- youth_results[-1,]
 #we only select the columns most related to mental health issues
 youth_results_mh <- youth_results[c('Pyramid_Number', 'Pyramid', 'Demographic', 'Depressive_Symptoms',
                                  'Suicide_Consider','Suicide_Attempt','Stress_Low','Stress_Medium','Stress_High')]
-#we only select the rows where they give us the overall score of the pyramid
-youth_results_mh_overall <- subset(youth_results_mh, Demographic == "Overall")
 
-#joining the survey results to the highSchool map data
+#make different data sets depending on grade level (chanida will do 8)
+youth_results_mh_overall <- subset(youth_results_mh, Demographic == "Overall")
+youth_results_mh_10 <- subset(youth_results_mh, Demographic == "10th Grade")
+youth_results_mh_12 <- subset(youth_results_mh, Demographic == "12th Grade")
+
+
+#joining the survey results to the highSchool map data for each grade level
 highSchool_percent_count <- youth_results_mh_overall %>% left_join(highSchool@data, by = c("Pyramid" = "SCHOOL_NAM"))
+highSchool_percent_count_10 <- youth_results_mh_10 %>% left_join(highSchool@data, by = c("Pyramid" = "SCHOOL_NAM"))
+highSchool_percent_count_12 <- youth_results_mh_12 %>% left_join(highSchool@data, by = c("Pyramid" = "SCHOOL_NAM"))
 
 #~~~~~~~~~Based on Bianica's Code
-#Based on Bianica's Code
 names(highSchool@data)
 highSchool@data$id <- rownames(highSchool@data)
 highSchool@data$id
@@ -81,33 +86,90 @@ highSchool.points <- fortify(highSchool)
 names(highSchool.points)
 
 #we are joining the Lat Long data with our shape data that we joined in line 71
+#do this three times: once for each grade level
 highSchool.df <- left_join(highSchool.points, highSchool@data, by = "id")
 highSchool.df <- left_join(highSchool.df, highSchool_percent_count, by = "OBJECTID")
 
-#~~~~~~~~~~~~~MY HEATMAPS
+highSchool.df_10 <- left_join(highSchool.points, highSchool@data, by = "id")
+highSchool.df_10 <- left_join(highSchool.df_10, highSchool_percent_count_10, by = "OBJECTID")
+
+highSchool.df_12 <- left_join(highSchool.points, highSchool@data, by = "id")
+highSchool.df_12 <- left_join(highSchool.df_12, highSchool_percent_count_12, by = "OBJECTID")
+
+#EXAMPLE HEATMAP
 #Overall heatmap for Depressive symptoms
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
     fill = as.numeric(Depressive_Symptoms)), color = "black") +
     labs(title = "% of Students reporting Depressive Symptoms") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26)
-
-    points(mhp_clean$longitude, mhp_clean$latitude, pty =16, cex = 0.25, col = "red")
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26, labels("%")) +
 suppressWarnings(print(plt))
 
+#~~~~~~~HEATMAPS FOR 10TH and 12TH GRADES note that midpoints will be different
+#10th grade depressive symptoms
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
-                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
-    labs(title = "% of Students considering suicide") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26)
+    geom_polygon(data = highSchool.df_10, aes(x = long, y = lat, group = OBJECTID,
+    fill = as.numeric(Depressive_Symptoms)), color = "black") +
+    labs(title = "% of 10th Grade Students reporting Depressive Symptoms") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 24.5)
 suppressWarnings(print(plt))
 
+#10th grade suicide considerations
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
-                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
-    labs(title = "% of Students reporting Depressive Symptoms") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26)
+    geom_polygon(data = highSchool.df_10, aes(x = long, y = lat, group = OBJECTID,
+    fill = as.numeric(Suicide_Consider)), color = "black") +
+    labs(title = "% of 10th GradeStudents considering suicide") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 14)
 suppressWarnings(print(plt))
+
+#10th grade suicide attempts
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df_10, aes(x = long, y = lat, group = OBJECTID,
+    fill = as.numeric(Suicide_Attempt)), color = "black") +
+    labs(title = "% of 10th Grade Students attempted suicide") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 6)
+suppressWarnings(print(plt))
+
+#10th grade high stress
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df_10, aes(x = long, y = lat, group = OBJECTID,
+    fill = as.numeric(Stress_High)), color = "black") +
+    labs(title = "% of 10th Grade Students reporting high stress") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 38)
+suppressWarnings(print(plt))
+
+#12th grade depressive symptoms
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df_12, aes(x = long, y = lat, group = OBJECTID,
+    fill = as.numeric(Depressive_Symptoms)), color = "black") +
+    labs(title = "% of 12th Grade Students reporting Depressive Symptoms") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 30)
+suppressWarnings(print(plt))
+
+#12th grade suicide considerations
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df_12, aes(x = long, y = lat, group = OBJECTID,
+    fill = as.numeric(Suicide_Consider)), color = "black") +
+    labs(title = "% of 12th Grade Students considering suicide") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 16)
+suppressWarnings(print(plt))
+
+#12th grade suicide attempts
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df_12, aes(x = long, y = lat, group = OBJECTID,
+    fill = as.numeric(Suicide_Attempt)), color = "black") +
+    labs(title = "% of 12th Grade Students attempted suicide") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 7)
+suppressWarnings(print(plt))
+
+#12th grade high stress
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df_12, aes(x = long, y = lat, group = OBJECTID,
+    fill = as.numeric(Stress_High)), color = "black") +
+    labs(title = "% of 12th Grade Students reporting high stress") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 44)
+suppressWarnings(print(plt))
+#~~~~~~END HEAT MAPS
 
 #THIS IS CODE TO OVERLAY MENTAL HEALTH PROVIDER WITH OVERALL DEPRESSIVE SYMPTOM MAP
 #Copy code from zarni
