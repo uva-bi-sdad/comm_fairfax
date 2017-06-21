@@ -80,18 +80,56 @@ highSchool@data$id
 highSchool.points <- fortify(highSchool)
 names(highSchool.points)
 
+#we are joining the Lat Long data with our shape data that we joined in line 71
 highSchool.df <- left_join(highSchool.points, highSchool@data, by = "id")
 highSchool.df <- left_join(highSchool.df, highSchool_percent_count, by = "OBJECTID")
 
-#CAN WE CONFIRM THE NUMBERS BY LOOKING AT THE MAP (FROM BEN: ONLINE), the table we built MHP table above and the DENSITY VOLUMES HERE?
-
-#JEFFERSON HIGH SCHOOL IS IN THE LOW TRIANGLE
+#~~~~~~~~~~~~~MY HEATMAPS
+#Overall heatmap for Depressive symptoms
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
     fill = as.numeric(Depressive_Symptoms)), color = "black") +
     labs(title = "% of Students reporting Depressive Symptoms") +
-    scale_fill_gradient(low = '#721b1b', high = '#ff10f5')
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26)
+
+    points(mhp_clean$longitude, mhp_clean$latitude, pty =16, cex = 0.25, col = "red")
 suppressWarnings(print(plt))
 
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
+    labs(title = "% of Students considering suicide") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26)
+suppressWarnings(print(plt))
+
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
+    labs(title = "% of Students reporting Depressive Symptoms") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26)
+suppressWarnings(print(plt))
+
+#THIS IS CODE TO OVERLAY MENTAL HEALTH PROVIDER WITH OVERALL DEPRESSIVE SYMPTOM MAP
+#Copy code from zarni
+mhp_clean <- rio::import("~/git/lab/comm_fairfax/data/comm_fairfax/original/mhp_clean.csv")
+long_lat_mhp <- SpatialPoints(cbind(Long=as.numeric(mhp_clean$longitude), Lat=as.numeric(mhp_clean$latitude)))
+long_lat_mhp_frame <- SpatialPointsDataFrame(cbind(lon = as.numeric(mhp_clean$longitude), lat = as.numeric(mhp_clean$latitude)),data = mhp_clean)
+proj4string(long_lat_mhp_frame) <- proj4string(highSchool)
+crs.geo <- CRS("+init=epsg:4326")
+proj4string(long_lat_mhp) <- crs.geo
+
+nrow(highSchool@data)
+#Gives Associated Polygon for each Spatial Point
+sch_with_mhp <- as.data.table(over(long_lat_mhp,highSchool))
+mhp_per_sch <- sch_with_mhp[,.N,OBJECTID]
+mhp_per_sch <- mhp_per_sch %>% left_join(highSchool@data, by = c("OBJECTID", "OBJECTID"))
+
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
+    labs(title = "% of Students reporting Depressive Symptoms") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26) +
+    geom_point(data = mhp_clean, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue")
+suppressWarnings(print(plt))
 
 
