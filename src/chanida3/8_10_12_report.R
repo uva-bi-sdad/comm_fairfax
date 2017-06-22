@@ -122,7 +122,8 @@ plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
     fill = as.numeric(Depressive_Symptoms)), color = "black") +
     labs(title = "% of Students reporting Depressive Symptoms") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =26) +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =25.93,
+                         guide=guide_colourbar(title = "Percent")) +
     geom_point(data = mhp_clean, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue")
 suppressWarnings(print(plt))
 
@@ -131,7 +132,8 @@ plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
     fill = as.numeric(Suicide_Consider)), color = "black") +
     labs(title = "% of Students reporting Considering Suicide") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =14)
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =15.17,
+                         guide=guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
 
 #HEAT MAP for Suicide Attempt
@@ -139,33 +141,18 @@ plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
     fill = as.numeric(Suicide_Attempt)), color = "black") +
     labs(title = "% of Students reporting Suicide Attempt") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =6)
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =6,
+                         guide=guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
 
-#HEAT MAP for Low Stress
-plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Stress_Low)), color = "black") +
-    labs(title = "% of Students reporting Low Stress Levels") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =20)
-suppressWarnings(print(plt))
-
-#HEAT MAP for Medium Stress
-plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Stress_Medium)), color = "black") +
-    labs(title = "% of Students reporting Medium Stress Levels") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =43)
-suppressWarnings(print(plt))
 
 #HEAT MAP for High Stress
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
     fill = as.numeric(Stress_High)), color = "black") +
     labs(title = "% of Students reporting High Stress Levels") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =40)
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =43.82)
 suppressWarnings(print(plt))
-
 
 
 ##############FOR THE 8TH GRADERS
@@ -176,7 +163,8 @@ plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df8, aes(x = long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Depressive_Symptoms)), color = "black") +
     labs(title = "% of Students reporting Depressive Symptoms") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =24)
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =22.02,
+                         guide=guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
 
 #HEAT MAP for % of Students reporting Considering Suicide
@@ -184,38 +172,28 @@ plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df8, aes(x = long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Suicide_Consider)), color = "black") +
     labs(title = "% of Students reporting Considering Suicide") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =14)
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =10.78,
+                         guide=guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
 
 #HEAT MAP for Suicide Attempt
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df8, aes(x = long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Suicide_Attempt)), color = "black") +
     labs(title = "% of Students reporting Suicide Attempt") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =6)
-suppressWarnings(print(plt))
-
-#HEAT MAP for Low Stress
-plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
-                                           fill = as.numeric(Stress_Low)), color = "black") +
-    labs(title = "% of Students reporting Low Stress Levels") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =20)
-suppressWarnings(print(plt))
-
-#HEAT MAP for Medium Stress
-plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
-                                           fill = as.numeric(Stress_Medium)), color = "black") +
-    labs(title = "% of Students reporting Medium Stress Levels") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =43)
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =5.64,
+                         guide=guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
 
 #HEAT MAP for High Stress
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df8, aes(x = long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Stress_High)), color = "black") +
     labs(title = "% of Students reporting High Stress Levels") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =40)
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint =20.82,
+                         guide=guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
+
+
+
 
