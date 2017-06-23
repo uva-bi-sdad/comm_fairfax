@@ -28,12 +28,19 @@ while (count < 85 ) {
       q[i] <- sub(".*?profid=(.*?)&.*", "\\1", p[(i%%20)])
       }
     }
+   
 }  
 
-profileURL <- read_html(paste0("https://therapists.psychologytoday.com/rms/prof_detail.php?profid=", q[7],"&rec_next=1&ref=1&sid=1498155929.7585_14656&county=Fairfax&state=VA&tr=ResultsProfileBtn"))
+q <- q[q != ""]
+
+for(j in 1:15)
+{
+  
+profileURL <- read_html(paste0("https://therapists.psychologytoday.com/rms/prof_detail.php?profid=", q[j],"&rec_next=1&ref=1&sid=1498155929.7585_14656&county=Fairfax&state=VA&tr=ResultsProfileBtn"))
 
 address <- profileURL %>% html_node(".address-rank-1 div:nth-child(1)")
 
 tempAddress <- str_split(address, "\n")
-finalAddress <- str_split(tempAddress[[1]][[2]], "<br>")[[1]]
+finalAddress <- append(finalAddress, tail(str_split((str_split(tempAddress[[1]][[2]], "<br>")[[1]]), "    ")[[1]], n = 1))
+}
           
