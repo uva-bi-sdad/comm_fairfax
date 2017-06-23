@@ -203,5 +203,5 @@ plt <-ggplot(highSchool) +
     geom_point(data = mhp_clean, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue")
 
 suppressWarnings(print(plt))
-
+ggsave(filename = "6_23_overlay.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
 
