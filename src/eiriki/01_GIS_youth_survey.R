@@ -114,6 +114,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 24.5,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
+ggsave(filename = "10th_grade_depress.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
 
 #10th grade suicide considerations
 plt <-ggplot(highSchool) +
@@ -123,6 +124,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 14,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
+ggsave(filename = "10th_grade_consider.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
 
 #10th grade suicide attempts
 plt <-ggplot(highSchool) +
@@ -132,6 +134,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 6,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
+ggsave(filename = "10th_grade_attempt.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
 
 #10th grade high stress
 plt <-ggplot(highSchool) +
@@ -141,6 +144,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 38,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
+ggsave(filename = "10th_grade_stress.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
 
 #12th grade depressive symptoms
 plt <-ggplot(highSchool) +
@@ -150,6 +154,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 30,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
+ggsave(filename = "12th_grade_depress.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
 
 #12th grade suicide considerations
 plt <-ggplot(highSchool) +
@@ -159,6 +164,8 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 16,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
+ggsave(filename = "12th_grade_consider.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
+
 
 #12th grade suicide attempts
 plt <-ggplot(highSchool) +
@@ -168,6 +175,9 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 7,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
+ggsaveggsave(filename = "12th_grade_attempt.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
+
+
 
 #12th grade high stress
 plt <-ggplot(highSchool) +
@@ -177,6 +187,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 44,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
+ggsave(filename = "12th_grade_stress.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
 #~~~~~~END HEAT MAPS
 
 #THIS IS CODE TO OVERLAY MENTAL HEALTH PROVIDER WITH OVERALL DEPRESSIVE SYMPTOM MAP
@@ -203,5 +214,5 @@ plt <-ggplot(highSchool) +
     geom_point(data = mhp_clean, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue")
 
 suppressWarnings(print(plt))
-ggsave(filename = "6_23_overlay.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
+ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/src/eiriki/", device = "png")
 
