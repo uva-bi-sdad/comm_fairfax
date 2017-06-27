@@ -1,13 +1,14 @@
+#This is all Zarni's code for fairfax
 library(dplyr)
+library(data.table)
 library(rio)
-
 #Mental Health Providers
-mh_provider <- rio::import("~/git/comm_fairfax/data/comm_fairfax/original/SAMSHA Behavioral_Health_Treament_Facility_listing_2017_06_09_150743.xlsx.xlsx")
+mh_provider <- rio::import("~/git/lab/comm_fairfax/data/comm_fairfax/original/SAMSHA Behavioral_Health_Treament_Facility_listing_2017_06_09_150743.xlsx.xlsx")
 
 View(mh_provider)
 colnames(mh_provider)[1] <- "Name"
 colnames(mh_provider)[2] <- "Type"
-fairfaxzip <- rio::import("~/git/comm_fairfax/data/comm_fairfax/original/fairfaxZipcodes.txt")
+fairfaxzip <- rio::import("~/git/lab/comm_fairfax/data/comm_fairfax/original/fairfaxZipcodes.txt")
 
 nrow(fairfaxzip)
 colnames(fairfaxzip)[1] <- "zip"
@@ -24,12 +25,11 @@ sort(unique(mh_provider$county))
 
 #Note there are some Arlington and Loudon County stuff in here.
 mhp_fairfax <- mh_provider %>% inner_join(fairfaxzip, by = c("zip","zip"))
+
 nrow(mhp_fairfax)
 
-View(mhp_fairfax)
-
 mhp_fairfax_only <- mh_provider %>%
-                    filter(county == "Fairfax City" | county == "Fairfax")
+    filter(county == "Fairfax City" | county == "Fairfax")
 nrow(mhp_fairfax_only)
 
 View(mhp_fairfax_only)
@@ -48,7 +48,5 @@ View(mhp_fairfax_clean)
 
 mhp_zip_count <- mhp_fairfax_clean%>% group_by(zip) %>% summarize(count = n())
 mhp_fairfax_clean <- mhp_fairfax_clean %>% left_join(mhp_zip_count, by = c("zip", "zip"))
-write.csv(mhp_fairfax_clean, file = "/home/zarni90/git/comm_fairfax/data/comm_fairfax/original/mhp_clean.csv")
-
 #mhp_fairfax_clean$count
 

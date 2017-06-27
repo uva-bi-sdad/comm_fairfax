@@ -119,6 +119,7 @@ points(mhp_clean$longitude, mhp_clean$latitude, pty =16, cex = 0.25, col = "red"
 ```
 
 ### Mental Health Provider by High School Pyramid
+
 ```{r warning ='hide', message = 'hide'}
 plt <- ggplot(data = mhp_per_sch, aes (x=SCHOOL_NAM, y = N, fill = N)) +
     geom_bar(stat = "identity") +
@@ -131,13 +132,25 @@ suppressWarnings(print(plt))
 ```
 
 ### HeatMap 
+### Interesting fact for the week:
+### Let's DRAW a ACS INCOME MAP BY SCHOOL BOUNDARY TO CATCH the Rich folks AT MCCLEAN!
 ```{r}
 #Based on Bianica's Code
+names(highSchool@data)
 highSchool@data$id <- rownames(highSchool@data)
+highSchool@data$id
+
+#Convert Polygon information into data frame is what fortify does
 highSchool.points <- fortify(highSchool)
+names(highSchool.points)
+
 highSchool.df <- left_join(highSchool.points, highSchool@data, by = "id")
 highSchool.df <- left_join(highSchool.df, mhp_per_sch, by = "OBJECTID")
 
+#CAN WE CONFIRM THE NUMBERS BY LOOKING AT THE MAP (FROM BEN: ONLINE), the table we built MHP table above and the DENSITY VOLUMES HERE?
+
+#JEFFERSON HIGH SCHOOL IS IN THE LOW TRIANGLE
+mhp_per_sch
 plt <-ggplot(highSchool) + 
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID, fill = N), color = "red") + labs(title = "Mental Health Providers Heat Map \n by High School Pyramid") 
 suppressWarnings(print(plt))
