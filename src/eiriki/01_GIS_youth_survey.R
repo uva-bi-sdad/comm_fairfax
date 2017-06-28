@@ -187,7 +187,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 44,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "12th_grade_stress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
+ggsave(filename = "12th_grade_stress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/", device = "png")
 #~~~~~~END HEAT MAPS
 
 #THIS IS CODE TO OVERLAY MENTAL HEALTH PROVIDER WITH OVERALL DEPRESSIVE SYMPTOM MAP
@@ -214,5 +214,5 @@ plt <-ggplot(highSchool) +
     geom_point(data = mhp_clean, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue")
 
 suppressWarnings(print(plt))
-ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
+ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/", device = "png")
 
