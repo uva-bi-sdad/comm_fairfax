@@ -214,5 +214,5 @@ plt <-ggplot(highSchool) +
     geom_point(data = mhp_clean, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue")
 
 suppressWarnings(print(plt))
-ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/", device = "png")
+ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/overlays", device = "png")
 
