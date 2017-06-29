@@ -122,6 +122,7 @@ nrow(mhp_per_sch)
 highSchool_count <- highSchool@data %>% left_join(mhp_per_sch, by = c("OBJECTID","OBJECTID"))
 nrow(highSchool_count)
 
+
 length(mhp_per_sch$OBJECTID)
 
 #This converts the polygon object to a dataframe that includes all the points that would the 25 high school polygons
@@ -144,7 +145,7 @@ head(mhp_per_sch)
 ggplot(data = mhp_per_sch, aes (x=SCHOOL_NAM, y = N, fill = N)) +
     geom_bar(stat = "identity") +
     theme_minimal() +
-    theme(axis.text.x = element_text(angle=90, hjust =1, vjust=0.5, size = 7.5), panel.grid.major = NULL) + ggtitle("Count of Mental Health Providers by High School Pyramid") +
+    theme(axis.text.x = element_text(angle=90, hjust =1, vjust=0.5, size = 7.5), panel.grid.major = element_blank()) + ggtitle("Count of Mental Health Providers by High School Pyramid") +
     labs(y= "Number of Mental Health Providers", x = "High School Name") +
     scale_y_discrete(limits=1:10, labels = 1:10) +
     scale_fill_gradient2(low = '#d8b365', mid = '#808080', high = '#5ab4ac', midpoint = 5)

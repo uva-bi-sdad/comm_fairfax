@@ -55,15 +55,17 @@ plot(highSchool, main = "Fairfax High School Boundary")
 
 #accessing the youth survey data
 #take some steps to clean up the data and name the columns
-youth_results <- read_excel("~/git/lab/comm_fairfax/data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
-                   sheet = "8-10-12 Results by Pyramid")
+youth_results <- read_excel("~/git/comm_fairfax/data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
+                            sheet = "8-10-12 Results by Pyramid")
+
+View(youth_results)
 youth_results <- youth_results[-1,]
 colnames(youth_results) <- youth_results[1,]
 youth_results <- youth_results[-1,]
 
 #we only select the columns most related to mental health issues
 youth_results_mh <- youth_results[c('Pyramid_Number', 'Pyramid', 'Demographic', 'Depressive_Symptoms',
-                                 'Suicide_Consider','Suicide_Attempt','Stress_Low','Stress_Medium','Stress_High')]
+                                    'Suicide_Consider','Suicide_Attempt','Stress_Low','Stress_Medium','Stress_High')]
 
 #make different data sets depending on grade level (chanida will do 8)
 youth_results_mh_overall <- subset(youth_results_mh, Demographic == "Overall")
@@ -100,94 +102,83 @@ highSchool.df_12 <- left_join(highSchool.df_12, highSchool_percent_count_12, by 
 #Overall heatmap for Depressive symptoms
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Depressive_Symptoms)), color = "black") +
+                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
     labs(title = "% of Students reporting Depressive Symptoms") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26, labels("%")) +
-suppressWarnings(print(plt))
+    suppressWarnings(print(plt))
 
 #~~~~~~~HEATMAPS FOR 10TH and 12TH GRADES note that midpoints will be different
 #10th grade depressive symptoms
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df_10, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Depressive_Symptoms)), color = "black") +
+                                              fill = as.numeric(Depressive_Symptoms)), color = "black") +
     labs(title = "% of 10th Grade Students reporting Depressive Symptoms") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 24.5,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "10th_grade_depress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 #10th grade suicide considerations
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df_10, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Suicide_Consider)), color = "black") +
+                                              fill = as.numeric(Suicide_Consider)), color = "black") +
     labs(title = "% of 10th GradeStudents considering suicide") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 14,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "10th_grade_consider.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 #10th grade suicide attempts
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df_10, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Suicide_Attempt)), color = "black") +
+                                              fill = as.numeric(Suicide_Attempt)), color = "black") +
     labs(title = "% of 10th Grade Students attempted suicide") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 6,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "10th_grade_attempt.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 #10th grade high stress
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df_10, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Stress_High)), color = "black") +
+                                              fill = as.numeric(Stress_High)), color = "black") +
     labs(title = "% of 10th Grade Students reporting high stress") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 38,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "10th_grade_stress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 #12th grade depressive symptoms
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df_12, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Depressive_Symptoms)), color = "black") +
+                                              fill = as.numeric(Depressive_Symptoms)), color = "black") +
     labs(title = "% of 12th Grade Students reporting Depressive Symptoms") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 30,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "12th_grade_depress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 #12th grade suicide considerations
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df_12, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Suicide_Consider)), color = "black") +
+                                              fill = as.numeric(Suicide_Consider)), color = "black") +
     labs(title = "% of 12th Grade Students considering suicide") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 16,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "12th_grade_consider.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
-
 
 #12th grade suicide attempts
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df_12, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Suicide_Attempt)), color = "black") +
+                                              fill = as.numeric(Suicide_Attempt)), color = "black") +
     labs(title = "% of 12th Grade Students attempted suicide") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 7,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "12th_grade_attempt.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
-
-
 
 #12th grade high stress
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df_12, aes(x = long, y = lat, group = OBJECTID,
-    fill = as.numeric(Stress_High)), color = "black") +
+                                              fill = as.numeric(Stress_High)), color = "black") +
     labs(title = "% of 12th Grade Students reporting high stress") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 44,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "12th_grade_stress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/", device = "png")
 #~~~~~~END HEAT MAPS
 
 #THIS IS CODE TO OVERLAY MENTAL HEALTH PROVIDER WITH OVERALL DEPRESSIVE SYMPTOM MAP
@@ -214,5 +205,5 @@ plt <-ggplot(highSchool) +
     geom_point(data = mhp_clean, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue")
 
 suppressWarnings(print(plt))
-ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/overlays", device = "png")
+
 
