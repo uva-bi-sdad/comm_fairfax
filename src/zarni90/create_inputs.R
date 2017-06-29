@@ -3,8 +3,13 @@
 
 # inputs:
 #   Fairfax tax records (CoreLogic: Home Value, #Bedrooms, Zip Code, High School)
+#
+
 #   Fairfax PUMS (Housing: NP, Home Value, Bedrooms)
-#   Fairfax PUMS (Housing + Person: NP, Home Value, Bedrooms, Race, Medicare, Medicaid)
+#   Fairfax PUMS (Housing + Person: NP, Home Value, Bedrooms, Race, Medicare, Medicaid) #Need this one
+#   Attah
+
+
 #   Fairfax Zip Code demographic summaries (Total Population, Race, Medicare, Medicaid by Zip Code)
 #   Fairfax High School area boundaries (fortify shapefile)
 #   Fairfax Zip Code boundaries (fortify shapefile)
@@ -17,6 +22,7 @@
 # STEP 1: PREPARE INPUTS
 #   attach zip code, high school area to CoreLogic
 #   select variables needed from each dataset
+#   ???? Which each data set are u referring to?
 #   attach home value, #bedrooms by house id to person PUMS
 #   save the inputs as an RData file
 
@@ -37,21 +43,47 @@
 library(maptools)
 library(dplyr)
 library(tigris)
+library(rio)
+library(mi)
 
 test <- read.csv("~/sdal/projects/hud_census/data/CoreLogic/2_WORKING/Fairfax_County_2013.csv")
 
 
 # read in Fairfax CoreLogic data
-ffx <- read.csv("~/git/comm_fairfax/data/comm_fairfax/working/Fairfax_ALL_2013.csv")
+#Is this synthetic data? We are guessing it is.
+
+ffx <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/Fairfax_ALL_2013.csv")
+#Some explorations
+length(names(ffx))
+nrow(ffx)
+unique(ffx$X.FIPS.CODE)
+ffx$X.SITUS.HOUSE.NUMBER..2.
+
+#Some error down here to be fixed later.
+ffx<-apply(ffx, 2, function(x) gsub("^$|^ $", NA, x))
+missing_df <- apply(ffx, 2, function (x) sum(is.na(x)))
+View(missing_df)
+missing_df <- t(missing_df)
+missing_df <- data.frame(missing_df)
+View(missing_df)
+missing_df$X.SITUS.HOUSE.NUMBER..2.
+
+
 
 # read VA housing PUMS
-PUMS_housing <- read.csv("~/sdal/projects/comm_fairfax/working/synthetic_population/PUMS/ss14hva.csv") %>%
-# read VA person PUMS
+PUMS_housing <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/synthetic_population/PUMS/ss14hva.csv")
+    # read VA person PUMS
+length(names(PUMS_housing))
+nrow(PUMS_housing)
 PUMS_person <- read.csv("~/sdal/projects/comm_fairfax/working/synthetic_population/PUMS/ss14pva.csv")
+length(names(PUMS_person))
+match(names(PUMS_housing), names(PUMS_person))
+names(PUMS_housing)
+names(PUMS_person)
 
 # filter to Fairfax county
-va_pumas <- pumas("va")
-ffx_pumas <- 59301:59309
+va_pumas <- pumas("va") #download the puma shapefile for virginia
+ffx_pumas <- 59301:59309     #shapefile code for ffx? guess
 
 PUMS_housing <- PUMS_housing %>% filter(PUMA %in% ffx_pumas)
 PUMS_person <- PUMS_person %>% filter(PUMA %in% ffx_pumas)
