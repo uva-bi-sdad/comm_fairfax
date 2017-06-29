@@ -59,6 +59,11 @@ parks <- readShapePoly("~/git/lab/comm_fairfax/data/comm_fairfax/original/ffx_pa
 parks <- spTransform(parks, rgmaprgb@crs)
 plot(parks)
 
+#read the non county parks shape files
+nonparks <- readShapePoly("~/git/lab/comm_fairfax/data/comm_fairfax/original/ffx_parks/NonCounty_Parks.shp",
+                       proj4string=CRS('+proj=longlat +ellps=WGS84'))
+nonparks <- spTransform(nonparks, rgmaprgb@crs)
+plot(nonparks)
 #~~~~~~~~~~~~~start import old code for OVERALL youth survey to overlay
 #accessing the youth survey data
 #take some steps to clean up the data and name the columns
@@ -96,18 +101,29 @@ highSchool.df <- left_join(highSchool.df, highSchool_percent_count, by = "OBJECT
 #################
 ################# START OF NEW OVERLAYS ON TOP OF YOUTH SURVEY HEATMAPS
 #start with overlaying COUNTY PARKS on OVERALL DEPRESSIVE SYMPTOMS
+#add county parks
 parks@data$id <- rownames(parks@data)
 parks.points <- fortify(parks)
 names(parks.points)
 
 parks.df <- left_join(parks.points, parks@data, by = "id")
 
+#add non county parks
+nonparks@data$id <- rownames(nonparks@data)
+nonparks.points <- fortify(nonparks)
+names(nonparks.points)
+
+nonparks.df <- left_join(nonparks.points, nonparks@data, by = "id")
+
+#do a ggplot on top of youth survey data
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Depressive_Symptoms)), color = "black") +
-    labs(title = "Mental Health providers, % of Overall Students reporting Depressive Symptoms") +
+    labs(title = "Parks in Fairfax, % of Overall Students reporting Depressive Symptoms") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
-    geom_polygon(data = parks.df, aes(x=long, y=lat, group = group))
+    geom_polygon(data = parks.df, aes(x=long, y=lat, group = group)) +
+    geom_polygon(data = nonparks.df, aes(x=long, y=lat, group = group, color = 'red'))
 suppressWarnings(print(plt))
-ggsave(filename = "parks_depress_overlay.png", path = "data/comm_fairfax/working/Youth_Survey_Heat_Maps")
+#use this to save plot
+#ggsave(filename = "parks_depress_overlay.png", path = "data/comm_fairfax/working/Youth_Survey_Heat_Maps/overlays")
