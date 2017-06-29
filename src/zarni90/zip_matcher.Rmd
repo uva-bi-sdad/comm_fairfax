@@ -7,7 +7,7 @@ output: html_document
 
 ```{r}
 ##########################################################################################
-#This set of functions take in a list of ACS table code and a list of zip codes and get all permutation of data set for each of the column
+#This set of functions take in a list of ACS table code and a list of zip codes and get all permutation of data set for each of the column. For now, the function to run with a list of table code is still under construction.
 ##########################################################################################
 
 #Loading the needed data packages
@@ -16,32 +16,28 @@ library(dplyr)
 library(stringr)
 
 ##########################################################################################
-#Zip_Matcher: function takes in a single table code, a list of zipcodes and the year
-#             the ACS survey is taken
+#Zip_Matcher: function takes in a single table code, a list of zipcodes (must be put in as character) and the year the ACS survey is taken
 ##########################################################################################
 
 zip_matcher <- function(tablecode, ziplist, endyear){
-    #Get everything in zip code
-    FX.VA<-geo.make(zip.code = "*")
+    #Get data for all the zipcodes
+    US<-geo.make(zip.code = "*")
     #Fetch the particular table
-    FX.VA.TP<-acs.fetch(geography=FX.VA, endyear=endyear, table.number=tablecode, col.name="pretty")
-    #May need to modify depending on table
-    FXCStats<-data.frame(estimate(FX.VA.TP), round(standard.error(FX.VA.TP),0))
-    #I have deleted out the colnames. We can put them up when we need to.
-    #colnames(FXCStats)<-c("Total","SE.Total")
+    US.TP<-acs.fetch(geography=US, endyear=endyear, table.number=tablecode, col.name="pretty")
+    #Pulling out the Stats we want
+    USStats<-data.frame(estimate(US.TP), round(standard.error(US.TP),0))
     #Establishing Zipcode from Rownames
-    FXCStats$zipcode <- row.names(FXCStats)
-    #FXCStats$zipcode
+    USStats$zipcode <- row.names(USStats)
     #Spliting the String part and the numeric part of Zipcode
-    FXCStats$zipcode <- zip_acs_processing(FXCStats$zipcode)
-    #Importing the Master ZipCode File
-    ziplist <- as.data.frame(ziplist)
-    colnames(ziplist) <- "zipcode"
+    USStats$zipcode <- zip_acs_processing(USStats$zipcode)
+    #Importing and Processing the Master ZipCode File
+    #For leading zero zip codes, you should have it formatted as character to begin with.
+    ziplist <- input_zip_processing(ziplist)
     ziplist$zipcode <- as.character(ziplist$zipcode)
-    FXCStats$zipcode <- as.character(FXCStats$zipcode)
+    USStats$zipcode <- as.character(USStats$zipcode)
     #Joining the two tables by ZipCode
-    FX_Zip_Final <- ziplist %>% left_join(FXCStats, by = "zipcode")
-    return (FX_Zip_Final)
+    US_Zip_Final <- ziplist %>% left_join(USStats, by = "zipcode")
+    return (US_Zip_Final)
 }
 
 ##########################################################################################
@@ -58,11 +54,11 @@ zip_acs_processing <- function(zipcode){
 #input_zip_processing: this helper function cleans the zipcodes that the user provides and
 #                      formats it as well as takes care of edge cases like leading "00"
 ##########################################################################################
-
-
-
-
-
+input_zip_processing <- function(zipcode){
+    zipcode <- as.data.frame(zipcode)
+    colnames(zipcode) <- "zipcode"
+    return (zipcode)
+}
 
 ####################
 ###Some examples
@@ -70,7 +66,7 @@ zip_acs_processing <- function(zipcode){
 #Population by Age Group and Sex
 #Getting the zipcodes of Fairfax county
 ziplist <- rio::import("~/git/comm_fairfax/data/fairfaxZipcodes.txt")
-pop_age_group <- zip_matcher("B01003", ziplist)
+pop_age_group <- zip_matcher("B01003", ziplist, 2015)
 #write.csv(pop_age_group, file="~/git/comm_fairfax/data/comm_fairfax/working/Pop_Age_Group.csv")
 
 #Population by Race/Ethnicity
