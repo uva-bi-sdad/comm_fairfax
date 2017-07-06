@@ -18,3 +18,6 @@ HS_Pyramid_Report[,4:28] <- sapply(HS_Pyramid_Report[4:28], as.numeric)
 
 #example scatterplot matrix for the four mental health variables
 scatterplotMatrix(~Depressive_Symptoms+Suicide_Consider+Suicide_Attempt+Stress_High, data=HS_Pyramid_Report)
+
+#matrix for food insecurity, parent help, daily fitness, drug use.
+scatterplotMatrix(~Depressive_Symptoms+Binge_Drinking+Physical_Activity_None+Food_Insecurity, data=HS_Pyramid_Report)
