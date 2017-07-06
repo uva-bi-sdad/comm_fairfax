@@ -153,5 +153,6 @@ plt4 <-ggplot(highSchool) +
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt4))
 
+#putting the four plots together
 par(mfrow=c(2,2))
 grid.arrange(plt,plt2,plt3,plt4)
