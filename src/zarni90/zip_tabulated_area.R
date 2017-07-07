@@ -28,6 +28,16 @@ nrow(fairfax)
 sum(fairfax$POPPT)
 #1081726 million
 
+setwd("~/sdal/projects/limbo/fairfax_alerts/")
+county <- readShapePoly("GISData/Fairfax_County_Border/Fairfax_County_Border.shp",
+                        proj4string=CRS('+proj=longlat +ellps=WGS84'))
+zip <- readShapePoly("GISData/ZIP_Codes/ZIP_Codes.shp",
+                     proj4string=CRS('+proj=longlat +ellps=WGS84'))
+
+shape_zip <- zip@data$ZIPCODE
+match(shape_zip, fairfax$ZCTA5)
+
+
 #Proof that we have the right zip codes
 #https://factfinder.census.gov/faces/nav/jsf/pages/community_facts.xhtml?src=bkmk
 

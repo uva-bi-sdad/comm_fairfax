@@ -4,17 +4,18 @@
 #   water flag, #bedrooms (partial)
 
 # imputation methods:
-# Water Flag        logistic regression (logreg)
-# Bedrooms (0-4)    polytomous logistic regression (polyreg)
-# Household Income  Bayesian linear regression (norm); take square root transformation
-# Rent              Bayesian linear regression (norm)
-# Year Built        Bayesian linear regression (norm)
+# Water Flag        logistic regression (logreg) from Core Logic/Housing data
+# Bedrooms (0-4)    polytomous logistic regression (polyreg) from both
+# Household Income  Bayesian linear regression (norm); take square root transformation from Housing
+# Rent              Bayesian linear regression (norm) from Housing
+# Year Built        Bayesian linear regression (norm) 
 
 library(ggplot2)
 library(mice)
 library(dplyr)
+library(mi)
 
-setwd("/home/sdal/projects/hud_census/analysis/Josh/synthetic population/person variables/")
+setwd("~/git/comm_fairfax/data/comm_fairfax/working/")
 
 # read in prepared data
 load("cleaned_renters.RData")
@@ -49,24 +50,43 @@ CLdata$source <- "CL"
 CLdata$HINCP <- NA
 CLdata$RNTP <- NA
 
+#We are using PUMS to impute
 PUMS$source <- "PUMS"
 PUMS$BlockGroup <- NA
 PUMS$WaterFlag <- NA
 
-CL_PUMS <- rbind( CLdata %>% select(HINCP,RNTP,BDSP=BEDROOMS,WaterFlag,YBL=YEAR.BUILT,BlockGroup,source),
-                  PUMS %>% select(HINCP,RNTP,BDSP,WaterFlag,YBL,BlockGroup,source) )
+nrow(PUMS)
+md.pattern(PUMS)
+nrow(CLdata)
+md.pattern(CLdata)
+#class(CLdata)
+
+CL_PUMS <- rbind( CLdata %>% dplyr::select(HINCP,RNTP,BDSP=BEDROOMS,WaterFlag,YBL=YEAR.BUILT,BlockGroup,source),
+                  PUMS %>% dplyr::select(HINCP,RNTP,BDSP,WaterFlag,YBL,BlockGroup,source) )
 CL_PUMS$sqrtHINCP <- sqrt(CL_PUMS$HINCP)
 CL_PUMS$BDSP <- as.factor(CL_PUMS$BDSP)
 CL_PUMS$WaterFlag <- as.factor(CL_PUMS$WaterFlag)
 
+md.pattern(CL_PUMS)
+summary(CL_PUMS)
+mdf <-missing_data.frame(CL_PUMS)
+names(CL_PUMS)
+View(mdf)
+image(mdf)
+
 # impute using mice over m replicates
-numdraws <- 100
-mice.out <- mice(data=CL_PUMS%>%select(sqrtHINCP,RNTP,BDSP,WaterFlag,YBL), m=numdraws,
+numdraws <- 10
+mice.out <- mice(data=CL_PUMS%>% dplyr::select(sqrtHINCP,RNTP,BDSP,WaterFlag,YBL), m=numdraws,
                  method=c("norm","norm","polyreg","logreg","norm"))
 
+length(mice.out$imp$sqrtHINCP)
 # get an imputed draw from the synthetic universe for each variable
 CLdraws_list <- list() # draws for only imputed CL
 CLdraws_full_list <- list() # draws for both imputed CL and imputed PUMS
+
+md.pattern(CL_PUMS)
+summary(CL_PUMS)
+
 
 for(i in 1:numdraws) {
     CLdraws_list[[i]] <- CL_PUMS
