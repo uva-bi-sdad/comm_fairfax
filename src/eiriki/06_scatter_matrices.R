@@ -1,5 +1,6 @@
 #doing a multiple scatterplot for regression on aggregates
 library(car)
+library(readxl)
 setwd('~/git/lab/comm_fairfax/')
 HS_Pyramid_Report <- read_excel("data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
                                 sheet = "8-10-12 Results by Pyramid")

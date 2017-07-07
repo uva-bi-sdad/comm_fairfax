@@ -55,7 +55,7 @@ plot(highSchool, main = "Fairfax High School Boundary")
 
 #accessing the youth survey data
 #take some steps to clean up the data and name the columns
-youth_results <- read_excel("~/git/comm_fairfax/data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
+youth_results <- read_excel("data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
                    sheet = "8-10-12 Results by Pyramid")
 youth_results <- youth_results[-1,]
 colnames(youth_results) <- youth_results[1,]
@@ -114,7 +114,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 24.5,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "10th_grade_depress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
+#ggsave(filename = "10th_grade_depress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 #10th grade suicide considerations
 plt <-ggplot(highSchool) +
@@ -124,7 +124,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 14,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "10th_grade_consider.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
+#ggsave(filename = "10th_grade_consider.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 #10th grade suicide attempts
 plt <-ggplot(highSchool) +
@@ -134,7 +134,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 6,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "10th_grade_attempt.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
+#ggsave(filename = "10th_grade_attempt.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 #10th grade high stress
 plt <-ggplot(highSchool) +
@@ -144,7 +144,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 38,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "10th_grade_stress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
+#ggsave(filename = "10th_grade_stress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 #12th grade depressive symptoms
 plt <-ggplot(highSchool) +
@@ -154,7 +154,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 30,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "12th_grade_depress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
+#ggsave(filename = "12th_grade_depress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 #12th grade suicide considerations
 plt <-ggplot(highSchool) +
@@ -164,7 +164,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 16,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "12th_grade_consider.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
+#ggsave(filename = "12th_grade_consider.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 
 #12th grade suicide attempts
@@ -175,7 +175,7 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 7,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "12th_grade_attempt.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
+#ggsave(filename = "12th_grade_attempt.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps", device = "png")
 
 
 
@@ -187,12 +187,14 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 44,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
-ggsave(filename = "12th_grade_stress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/", device = "png")
+#ggsave(filename = "12th_grade_stress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/", device = "png")
 #~~~~~~END HEAT MAPS
 
 #THIS IS CODE TO OVERLAY MENTAL HEALTH PROVIDER WITH OVERALL DEPRESSIVE SYMPTOM MAP
 #Copy code from zarni
-mhp_clean <- rio::import("~/git/comm_fairfax/data/comm_fairfax/original/mhp_clean.csv")
+
+#THIS LINE DOESN'T WORK ALL THE TIME CHECK THE PATH
+mhp_clean <- rio::import("data/comm_fairfax/original/mhp_clean.csv")
 long_lat_mhp <- SpatialPoints(cbind(Long=as.numeric(mhp_clean$longitude), Lat=as.numeric(mhp_clean$latitude)))
 long_lat_mhp_frame <- SpatialPointsDataFrame(cbind(lon = as.numeric(mhp_clean$longitude), lat = as.numeric(mhp_clean$latitude)),data = mhp_clean)
 proj4string(long_lat_mhp_frame) <- proj4string(highSchool)
@@ -215,8 +217,9 @@ plt <-ggplot(highSchool) +
     labs(title = "Mental Health providers, % of Overall Students reporting Depressive Symptoms") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
-    geom_point(data =latLongPlotData2, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue")
+    geom_point(data =latLongPlotData2, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue") +
+    geom_point(data =mhp_clean, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "deepskyblue")
 
 suppressWarnings(print(plt))
-ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/overlays", device = "png")
+#ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/overlays", device = "png")
 
