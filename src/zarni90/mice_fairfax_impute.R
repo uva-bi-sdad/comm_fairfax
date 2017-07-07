@@ -28,6 +28,37 @@ typeof(pums_person_interest$DREM)
 #ENG: Ability to speak English, N/A Less than 5 years old/speak only English, Unordered multinomial Variable
 md.pattern(pums_person_interest)
 
+#IMPUTE THE NAs of the respective PUMS_PERSON_INTEREST with the needed variables
+#PINCP
+length(which(is.na(pums_person_interest$PINCP))) #13926 has NA values. That means they are younger than 15. We are going impute $0 to them
+pums_person_interest$PINCP[which(is.na(pums_person_interest$PINCP))] <- 0
+
+#DREM
+length(which(is.na(pums_person_interest$DREM))) #4230 has NA values. N/A refers to less than 5 years old. We are imputing value 3 to it.
+unique(pums_person_interest$DREM) # 2 NA 1
+pums_person_interest$DREM[which(is.na(pums_person_interest$DREM))] <- 3
+
+#ENG
+length(which(is.na(pums_person_interest$ENG))) #72741 has NA values. N/A refers to less than 5 years old or speaks only English: We will impute it by 5
+pums_person_interest$ENG[which(is.na(pums_person_interest$ENG))] <- 5
+
+#PAP
+length(which(is.na(pums_person_interest$PAP))) #NA refers to less than 15 years old
+pums_person_interest$PAP[which(is.na(pums_person_interest$PAP))] <- 0 #Ma
+
+#RACE : NO NAs. Everything is good
+length(which(is.na(pums_person_interest$RAC1P)))
+
+#SEX : NO NAs. Everything is good
+length(which(is.na(pums_person_interest$SEX)))
+
+#AGEP : NO NAs. Everything is good
+length(which(is.na(pums_person_interest$AGEP))) #AGEP
+md.pattern(pums_person_interest)
+
+#Now, we need to combine it with the rest of empty over 1 million rows and run the initial plots.
+
+
 #Creating the empty data frame for all the missing people
 pums_all_fairfax <- data.frame(matrix(NA, ncol = 7, nrow = 1081726))
 #Appending column names to it
@@ -41,14 +72,20 @@ ncol(pums_person_interest)
 fairfax_pop <- fairfax_pop[-1]
 #Repeating the numbers of ZCTAs by population
 zip_vectir <- rep(fairfax_pop$ZCTA5, times = fairfax_pop$POPPT)
-#Adding ZCTAs to Fairfax data frame
 pums_all_fairfax$ZCTAS <- zip_vectir
+#Adding ZCTAs to Fairfax data frame
 
 #Write this out for JOSH
 write.csv(pums_all_fairfax, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
-View(pums_all_fairfax)
+pums_all_fairfax <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
+#View(pums_all_fairfax)
 #Making sure the pums_person file has the same number of columns
 pums_person_interest$ZCTAS <- NA
+ncol(pums_person_interest)
+names(pums_person_interest)
+ncol(pums_all_fairfax)
+#pums_all_fairfax <- pums_all_fairfax[-1]
+names(pums_all_fairfax)
 
 pums_combined <- rbind(pums_person_interest, pums_all_fairfax)
 names(pums_combined)
@@ -58,16 +95,10 @@ write.csv(pums_combined, file = "~/git/comm_fairfax/data/comm_fairfax/working/pu
 #FIXING THE NAS IN ALL THE ROWS
 #CHECK HOW MANY NAS FOR EACH ROW AND EXPLAIN WHY YOU IMPUTE IT THAT WAY
 
-
-#PINCP is income
-pums_all_fairfax[pums_all_fairfax$PINCP < 0,]
-
-
-
+#Making sure Variables that need to be factors are factors
 pums_combined$RAC1P <- as.factor(pums_combined$RAC1P)
 pums_combined$SEX <- as.factor(pums_combined$SEX)
 pums_combined$DREM <- as.factor(pums_combined$DREM)
-pums_combined$PAP <- as.factor(pums_combined$PAP)
 pums_combined$ENG <- as.factor(pums_combined$ENG)
 
 
@@ -77,10 +108,13 @@ pums_combined$ENG <- as.factor(pums_combined$ENG)
 #Put Seed in
 #maxit --: Number of iterations (Default is given as 5)
 #What is a good iterations number?
-numdraws <- 10
-mice.out <- mice(data=pums_combined%>% dplyr::select(RAC1P,SEX,AGEP,DREM,PINCP, PAP, ENG), m=numdraws,
-                 method=c("polyreg","logreg","norm","logreg","norm", "polyreg", "polyreg"))
+numdraws <- 5
+niter <- 5
+mice.out <- mice(data=pums_combined%>% dplyr::select(RAC1P,SEX,AGEP,DREM,PINCP, PAP, ENG), m=numdraws,maxit = niter,
+                 method=c("polyreg","logreg","norm","polyreg","norm", "norm", "polyreg"))
 
+
+#Diagonostic Code
 
 
 
