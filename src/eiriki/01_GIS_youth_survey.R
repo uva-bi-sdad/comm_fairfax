@@ -193,7 +193,7 @@ suppressWarnings(print(plt))
 #THIS IS CODE TO OVERLAY MENTAL HEALTH PROVIDER WITH OVERALL DEPRESSIVE SYMPTOM MAP
 #Copy code from zarni
 
-#THIS LINE DOESN'T WORK ALL THE TIME CHECK THE PATH
+#THIS LINE DOESN'T WORK ALL THE TIME CHECK THE WORKING DIRECTORY
 mhp_clean <- rio::import("data/comm_fairfax/original/mhp_clean.csv")
 long_lat_mhp <- SpatialPoints(cbind(Long=as.numeric(mhp_clean$longitude), Lat=as.numeric(mhp_clean$latitude)))
 long_lat_mhp_frame <- SpatialPointsDataFrame(cbind(lon = as.numeric(mhp_clean$longitude), lat = as.numeric(mhp_clean$latitude)),data = mhp_clean)
