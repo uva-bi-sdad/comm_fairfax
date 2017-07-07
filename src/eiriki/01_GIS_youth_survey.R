@@ -55,7 +55,7 @@ plot(highSchool, main = "Fairfax High School Boundary")
 
 #accessing the youth survey data
 #take some steps to clean up the data and name the columns
-youth_results <- read_excel("~/git/lab/comm_fairfax/data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
+youth_results <- read_excel("~/git/comm_fairfax/data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
                    sheet = "8-10-12 Results by Pyramid")
 youth_results <- youth_results[-1,]
 colnames(youth_results) <- youth_results[1,]
@@ -192,12 +192,16 @@ ggsave(filename = "12th_grade_stress.png", path = "~/git/lab/comm_fairfax/data/c
 
 #THIS IS CODE TO OVERLAY MENTAL HEALTH PROVIDER WITH OVERALL DEPRESSIVE SYMPTOM MAP
 #Copy code from zarni
-mhp_clean <- rio::import("~/git/lab/comm_fairfax/data/comm_fairfax/original/mhp_clean.csv")
+mhp_clean <- rio::import("~/git/comm_fairfax/data/comm_fairfax/original/mhp_clean.csv")
 long_lat_mhp <- SpatialPoints(cbind(Long=as.numeric(mhp_clean$longitude), Lat=as.numeric(mhp_clean$latitude)))
 long_lat_mhp_frame <- SpatialPointsDataFrame(cbind(lon = as.numeric(mhp_clean$longitude), lat = as.numeric(mhp_clean$latitude)),data = mhp_clean)
 proj4string(long_lat_mhp_frame) <- proj4string(highSchool)
 crs.geo <- CRS("+init=epsg:4326")
 proj4string(long_lat_mhp) <- crs.geo
+load("./data/comm_fairfax/working/latLongTherapistPlotData.RData")
+
+
+
 
 nrow(highSchool@data)
 #Gives Associated Polygon for each Spatial Point
@@ -211,7 +215,7 @@ plt <-ggplot(highSchool) +
     labs(title = "Mental Health providers, % of Overall Students reporting Depressive Symptoms") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
-    geom_point(data = mhp_clean, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue")
+    geom_point(data =latLongPlotData2, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue")
 
 suppressWarnings(print(plt))
 ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/overlays", device = "png")
