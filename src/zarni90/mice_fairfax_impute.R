@@ -35,11 +35,13 @@ fairfax_pop <- fairfax_pop[-1]
 zip_vectir <- rep(fairfax_pop$ZCTA5, times = fairfax_pop$POPPT)
 #Adding to Fairfax data frame
 pums_all_fairfax$ZCTAS <- zip_vectir
-
-
-
+write.csv(pums_all_fairfax, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
+View(pums_all_fairfax)
+pums_person_interest$ZCTAS <- NA
 
 pums_combined <- rbind(pums_person_interest, pums_all_fairfax)
+names(pums_combined)
+write.csv(pums_combined, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
 numdraws <- 10
 
 

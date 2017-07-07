@@ -20,6 +20,13 @@
 zcta_all <- rio::import(file = "https://www2.census.gov/geo/docs/maps-data/data/rel/zcta_county_rel_10.txt")
 typeof(zcta_all$GEOID)
 fairfax <- zcta_all[zcta_all$GEOID ==51059,]
+names(fairfax)
+fairfax_pop <- fairfax[,c(1, 5)]
+View(fairfax_pop)
+
+write.csv(fairfax_pop, file = "~/git/comm_fairfax/data/comm_fairfax/working/fairfax_pop.csv")
+write.csv(PUMS_person_interest, file = "~/git/comm_fairfax/data/comm_fairfax/working/PUMS_person_interest.csv")
+
 
 #There are 49 ZCTA for Fairfax
 nrow(fairfax)
