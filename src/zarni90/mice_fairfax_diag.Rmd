@@ -1,0 +1,47 @@
+---
+title: "mice_fairfax_diag"
+author: "Zarni"
+date: "7/8/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(mice)
+library(dplyr)
+library(mi)
+library(lattice)
+
+#Loading the R.Data file
+#Imputed data
+fairfax_imputed <- load("./data/comm_fairfax/working/miceoutput.Rdata")
+#Original data file
+fairfax_original <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest.csv")
+
+class(mice.out)
+#get the imputed data set out
+fairfax_imputed_final <- mice::complete(mice.out)
+sapply(fairfax_imputed_final, function(x) sum(is.na(x)))
+md.pattern(fairfax_imputed_final)
+
+
+#FIRST DIAGNOSTIC WITH STRIPPLOT (Takes a long time execute!)
+#Will run over night
+stripplot(mice.out, pch = 2, cex = 0.5)
+
+#DRAW CONVERGE GRAPHS#
+#Something is not working out. It's only drawing ENG
+plot(fairfax_imputed_final)
+#DENSITY PLOTS
+barplot(fairfax_imputed_final$RAC1P)
+
+#WHAT SORT OF RELATIONSHIP GRAPHS SHOULD I DRAW
+
+
+
+#COMPARING DISTRIBUTION OF VALUES
+par(mfrow=c(1,2))
+barplot(table(fairfax_imputed_final$RAC1P), main = "Im")
+barplot(table(fairfax_original$RAC1P))
+```
+

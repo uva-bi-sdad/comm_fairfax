@@ -76,8 +76,8 @@ pums_all_fairfax$ZCTAS <- zip_vectir
 #Adding ZCTAs to Fairfax data frame
 
 #Write this out for JOSH
-write.csv(pums_all_fairfax, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
-pums_all_fairfax <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
+#write.csv(pums_all_fairfax, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
+#pums_all_fairfax <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
 #View(pums_all_fairfax)
 #Making sure the pums_person file has the same number of columns
 pums_person_interest$ZCTAS <- NA
@@ -89,7 +89,7 @@ names(pums_all_fairfax)
 
 pums_combined <- rbind(pums_person_interest, pums_all_fairfax)
 names(pums_combined)
-write.csv(pums_combined, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
+#write.csv(pums_combined, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
 
 
 #FIXING THE NAS IN ALL THE ROWS
@@ -108,10 +108,21 @@ pums_combined$ENG <- as.factor(pums_combined$ENG)
 #Put Seed in
 #maxit --: Number of iterations (Default is given as 5)
 #What is a good iterations number?
+#START FROM HERE!!!
+pums_combined <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
+names(pums_combined)
+pums_combined <- pums_combined[-1]
+ncol(pums_combined)
+pums_combined$RAC1P <- as.factor(pums_combined$RAC1P)
+pums_combined$SEX <- as.factor(pums_combined$SEX)
+pums_combined$DREM <- as.factor(pums_combined$DREM)
+pums_combined$ENG <- as.factor(pums_combined$ENG)
 numdraws <- 5
 niter <- 5
 mice.out <- mice(data=pums_combined%>% dplyr::select(RAC1P,SEX,AGEP,DREM,PINCP, PAP, ENG), m=numdraws,maxit = niter,
-                 method=c("polyreg","logreg","norm","polyreg","norm", "norm", "polyreg"))
+                 method=c("polyreg","logreg","norm","polyreg","norm", "norm", "polyreg"), seed = 1234)
+
+#ENDS HERE
 
 
 #Diagonostic Code
