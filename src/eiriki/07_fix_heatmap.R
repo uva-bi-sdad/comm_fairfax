@@ -56,27 +56,42 @@ plot(highSchool, main = "Fairfax High School Boundary")
 
 #accessing the youth survey data
 #take some steps to clean up the data and name the columns
-setwd('~/git/lab/comm_fairfax/')
-youth_results <- read_excel("data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
-                            sheet = "8-10-12 Results by Pyramid")
-youth_results <- youth_results[-1,]
-colnames(youth_results) <- youth_results[1,]
-youth_results <- youth_results[-1,]
+#Accessing the survey table
+HS_Pyramid_Report <- read_excel("~/git/lab/comm_fairfax/data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
+                                sheet = "8-10-12 Results by Pyramid")
+
+#Making the new data table for the specific catergories
+HS_Pyramid_Report1 <- HS_Pyramid_Report[,c(1,2,3,
+                                           90,91,92,
+                                           93,94,95,
+                                           105,72,73,101,106,134,135,136,
+                                           20,21,126,
+                                           88,89,138,140,67,48,52,61)]
+#accessing the youth survey data
+#take some steps to clean up the data and name the columns
+HS_Pyramid_Report1 <- HS_Pyramid_Report1[-1,]
+colnames(HS_Pyramid_Report1) <- HS_Pyramid_Report1[1,]
+HS_Pyramid_Report1 <- HS_Pyramid_Report1[-1,]
 
 #we only select the columns most related to mental health issues
-youth_results_mh <- youth_results[c('Pyramid_Number', 'Pyramid', 'Demographic', 'Depressive_Symptoms',
-                                    'Suicide_Consider','Suicide_Attempt','Stress_Low','Stress_Medium','Stress_High')]
+HS_Pyramid_Report1_mh <- HS_Pyramid_Report1[c('Pyramid_Number', 'Pyramid', 'Demographic', 'Depressive_Symptoms',
+                                              'Suicide_Consider','Suicide_Attempt','Stress_Low','Stress_Medium','Stress_High',
+                                              'Binge_Drinking','BulliedVic_School','BulliedVic_Not_School','Cigarette_30',
+                                              'Marijuana_30','Physical_Activity_None','Physical_Activity_Daily',
+                                              'Extracurricular_Available','Extracurricular_Regularly','Fruit_Veg_5','Cyberbullying_SchoolVictim',
+                                              'Cyberbullying_SchoolAggressor','Sleep_4or less', 'Sleep_6','Parent_Help_Available','Adults_Talk','Gratitude','Food_Insecurity')]
+#we only select the rows where they give us the overall score of the pyramid
+HS_Pyramid_Report1_mh_overall <- subset(HS_Pyramid_Report1_mh, Demographic == "Overall")
 
-#make different data sets depending on grade level (chanida will do 8)
-youth_results_mh_overall <- subset(youth_results_mh, Demographic == "Overall")
-youth_results_mh_10 <- subset(youth_results_mh, Demographic == "10th Grade")
-youth_results_mh_12 <- subset(youth_results_mh, Demographic == "12th Grade")
+#make all columns numerics
+HS_Pyramid_Report1_mh_overall[,4:27] <- sapply(HS_Pyramid_Report1_mh_overall[4:27], as.numeric)
+HS_Pyramid_Report1_mh_overall[,4:27] <- round(HS_Pyramid_Report1_mh_overall[,4:27], digits = 2)
 
+#for convenience below
+youth_results_mh_overall <- HS_Pyramid_Report1_mh_overall
 
 #joining the survey results to the highSchool map data for each grade level
 highSchool_percent_count <- youth_results_mh_overall %>% left_join(highSchool@data, by = c("Pyramid" = "SCHOOL_NAM"))
-highSchool_percent_count_10 <- youth_results_mh_10 %>% left_join(highSchool@data, by = c("Pyramid" = "SCHOOL_NAM"))
-highSchool_percent_count_12 <- youth_results_mh_12 %>% left_join(highSchool@data, by = c("Pyramid" = "SCHOOL_NAM"))
 
 #~~~~~~~~~Based on Bianica's Code
 names(highSchool@data)
@@ -92,25 +107,118 @@ names(highSchool.points)
 highSchool.df <- left_join(highSchool.points, highSchool@data, by = "id")
 highSchool.df <- left_join(highSchool.df, highSchool_percent_count, by = "OBJECTID")
 
-highSchool.df_10 <- left_join(highSchool.points, highSchool@data, by = "id")
-highSchool.df_10 <- left_join(highSchool.df_10, highSchool_percent_count_10, by = "OBJECTID")
-
-highSchool.df_12 <- left_join(highSchool.points, highSchool@data, by = "id")
-highSchool.df_12 <- left_join(highSchool.df_12, highSchool_percent_count_12, by = "OBJECTID")
-
 #EXAMPLE HEATMAP WITH BAR CHART IN DECREASING ORDER
 #Overall heatmap for Depressive symptoms
+#make a bar chart that is ordered from high to low depressive symptoms
 bchart <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(Depressive_Symptoms)),
                                                y= Depressive_Symptoms, fill = as.numeric(Depressive_Symptoms))) +
     geom_bar(stat = 'identity')+
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26)+
-    theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
-bchart
-
+    guides(fill = FALSE) +
+    labs( x= 'High School Pyramid') +
+    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1)) +
+    scale_y_continuous(name="Percent", breaks = seq(20,32,1),limits=c(20, 32),oob = rescale_none)
+#make the same heatmap as before but hide all elements so it's legible
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Depressive_Symptoms)), color = "black") +
-    labs(title = "% of Students reporting Depressive Symptoms") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
-                         guide = guide_colourbar(title = "Percent"))
-suppressWarnings(print(plt))
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+            axis.text.y=element_blank(),axis.ticks=element_blank(),
+            axis.title.x=element_blank(),
+            axis.title.y=element_blank(),
+            panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+            panel.grid.minor=element_blank(),plot.background=element_blank())
+both1 <- grid.arrange(plt,bchart, ncol = 2, top = '% of Overall Students reporting Depressive Symptoms')
+#use this to save ggsave(both1, filename = "over_depress_with_bar.png",
+#path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/with_bar_chart",
+#device = "png", width=20,height=11.25,scale=1)
+
+#FOOD INSECURITY
+bchart2 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(Food_Insecurity)),
+                                               y= Food_Insecurity, fill = as.numeric(Food_Insecurity))) +
+    geom_bar(stat = 'identity')+
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 18.99)+
+    labs( x= 'High School Pyramid') +
+    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1)) +
+    scale_y_continuous(name="Percent", breaks = seq(10,33,1),limits=c(10, 33),oob = rescale_none)+
+    guides(fill = FALSE)
+plt2 <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Food_Insecurity)), color = "black") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 18.99,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())
+both2 <- grid.arrange(plt2,bchart2, ncol = 2, top = '% of Overall Students reporting Food Insecurity')
+
+#Physical Activity None
+bchart3 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(Physical_Activity_None)),
+                                                y= Physical_Activity_None, fill = as.numeric(Physical_Activity_None))) +
+    geom_bar(stat = 'identity')+
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 13.46)+
+    guides(fill = FALSE)+
+    labs( x= 'High School Pyramid') +
+    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1))+
+    scale_y_continuous(name="Percent", breaks = seq(8,19,1),limits=c(8, 19),oob = rescale_none)
+plt3 <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Physical_Activity_None)), color = "black") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 13.46,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())
+both3 <- grid.arrange(plt3,bchart3, ncol = 2, top = '% of Overall Students reporting No daily physical activity')
+
+#Parent Help Available
+bchart4 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(Parent_Help_Available)),
+                                                y= Parent_Help_Available, fill = as.numeric(Parent_Help_Available))) +
+    geom_bar(stat = 'identity')+
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 79.75)+
+    labs( x= 'High School Pyramid') +
+    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1)) +
+    scale_y_continuous(name="Percent", breaks = seq(73,87,1),limits=c(73, 87),oob = rescale_none)+
+    guides(fill = FALSE)
+plt4 <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Parent_Help_Available)), color = "black") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 79.75,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())
+both4 <- grid.arrange(plt4,bchart4, ncol = 2, top = '% of Overall Students reporting Parent Help')
+
+#Extracurricular Regularly
+bchart5 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(Extracurricular_Regularly)),
+                                                y= Extracurricular_Regularly, fill = as.numeric(Extracurricular_Regularly))) +
+    geom_bar(stat = 'identity')+
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 72.06)+
+    guides(fill =FALSE)+
+    labs( x= 'High School Pyramid') +
+    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1))+
+    scale_y_continuous(name="Percent", breaks = seq(58,87,1),limits=c(58, 87),oob = rescale_none)
+plt5 <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Extracurricular_Regularly)), color = "black") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 72.06,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())
+both5 <- grid.arrange(plt5,bchart5, ncol = 2, top = '% of Overall Students reporting Extracurricular Regularly')
