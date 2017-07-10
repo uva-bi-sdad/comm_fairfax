@@ -55,6 +55,7 @@ length(which(is.na(pums_person_interest$SEX)))
 #AGEP : NO NAs. Everything is good
 length(which(is.na(pums_person_interest$AGEP))) #AGEP
 md.pattern(pums_person_interest)
+write.csv(pums_person_interest, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest.csv")
 
 #Now, we need to combine it with the rest of empty over 1 million rows and run the initial plots.
 
@@ -113,10 +114,6 @@ pums_combined <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_
 names(pums_combined)
 pums_combined <- pums_combined[-1]
 ncol(pums_combined)
-pums_combined$RAC1P <- as.factor(pums_combined$RAC1P)
-pums_combined$SEX <- as.factor(pums_combined$SEX)
-pums_combined$DREM <- as.factor(pums_combined$DREM)
-pums_combined$ENG <- as.factor(pums_combined$ENG)
 numdraws <- 5
 niter <- 5
 mice.out <- mice(data=pums_combined%>% dplyr::select(RAC1P,SEX,AGEP,DREM,PINCP, PAP, ENG), m=numdraws,maxit = niter,
