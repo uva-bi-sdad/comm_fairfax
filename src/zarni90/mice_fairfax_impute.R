@@ -29,9 +29,16 @@ typeof(pums_person_interest$DREM)
 md.pattern(pums_person_interest)
 
 #IMPUTE THE NAs of the respective PUMS_PERSON_INTEREST with the needed variables
-#PINCP
+#PINCP # Check the distribution
 length(which(is.na(pums_person_interest$PINCP))) #13926 has NA values. That means they are younger than 15. We are going impute $0 to them
-pums_person_interest$PINCP[which(is.na(pums_person_interest$PINCP))] <- 0
+summary(pums_person_interest$PINCP)
+length(sum(pums_person_interest$PINCP < 0)) # Only 1 is less than 0
+pums_person_interest$PINCP[pums_person_interest$PINCP < 0] <- 0
+pums_person_interest$PINCP[which(is.na(pums_person_interest$PINCP))] <- 0 #Making all the NAs become zero
+hist(pums_person_interest$PINCP)
+test <- pums_person_interest$PINCP
+test <- log(test)
+hist(test) #This is more normal looking
 
 #DREM
 length(which(is.na(pums_person_interest$DREM))) #4230 has NA values. N/A refers to less than 5 years old. We are imputing value 3 to it.
@@ -43,6 +50,8 @@ length(which(is.na(pums_person_interest$ENG))) #72741 has NA values. N/A refers 
 pums_person_interest$ENG[which(is.na(pums_person_interest$ENG))] <- 5
 
 #PAP
+#Cap this at 2,000 and do log transform
+#Check if it's normal
 length(which(is.na(pums_person_interest$PAP))) #NA refers to less than 15 years old
 pums_person_interest$PAP[which(is.na(pums_person_interest$PAP))] <- 0 #Ma
 
@@ -53,6 +62,7 @@ length(which(is.na(pums_person_interest$RAC1P)))
 length(which(is.na(pums_person_interest$SEX)))
 
 #AGEP : NO NAs. Everything is good
+#Do the PMM matching. Looking at the distribution first and see what's going on?
 length(which(is.na(pums_person_interest$AGEP))) #AGEP
 md.pattern(pums_person_interest)
 write.csv(pums_person_interest, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest.csv")
