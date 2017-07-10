@@ -22,9 +22,11 @@ HS_Pyramid_Report[,4:28] <- sapply(HS_Pyramid_Report[4:28], as.numeric)
 scatterplotMatrix(~Depressive_Symptoms+Suicide_Consider+Suicide_Attempt+Stress_High, data=HS_Pyramid_Report)
 
 #matrix for food insecurity, parent help, daily fitness, drug use.
-scatterplotMatrix(~Depressive_Symptoms+Parent_Help_Available+Physical_Activity_None+Food_Insecurity +Extracurricular_Regularly, data=HS_Pyramid_Report)
+scatter1 <-scatterplotMatrix(~Depressive_Symptoms+Food_Insecurity+Physical_Activity_None+Parent_Help_Available+Extracurricular_Regularly, data=HS_Pyramid_Report)
 
 #multiple linear regression
-fit <- glm(Depressive_Symptoms~Parent_Help_Available+Physical_Activity_None+Food_Insecurity+Extracurricular_Regularly, data=HS_Pyramid_Report)
+fit <- glm(Depressive_Symptoms~Food_Insecurity+Physical_Activity_None+Parent_Help_Available+Extracurricular_Regularly, data=HS_Pyramid_Report)
 summary(fit)
 plot(fit)
+
+

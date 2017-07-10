@@ -142,7 +142,7 @@ bchart2 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 18.99)+
     labs( x= 'High School Pyramid') +
     theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1)) +
-    scale_y_continuous(name="Percent", breaks = seq(10,33,1),limits=c(10, 33),oob = rescale_none)+
+    scale_y_continuous(name="Percent", breaks = seq(5,33,1),limits=c(5, 33),oob = rescale_none)+
     guides(fill = FALSE)
 plt2 <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
