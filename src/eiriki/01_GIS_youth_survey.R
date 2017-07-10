@@ -185,7 +185,7 @@ plt <-ggplot(highSchool) +
     fill = as.numeric(Stress_High)), color = "black") +
     labs(title = "% of 12th Grade Students reporting high stress") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 44,
-                         guide = guide_colourbar(title = "Percent"))
+                         guide = guide_colourbar(title = "Percent")) + theme_bw()
 suppressWarnings(print(plt))
 #ggsave(filename = "12th_grade_stress.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/", device = "png")
 #~~~~~~END HEAT MAPS
@@ -217,9 +217,9 @@ plt <-ggplot(highSchool) +
     labs(title = "Mental Health providers, % of Overall Students reporting Depressive Symptoms") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
-    geom_point(data =latLongPlotData2, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue") +
+    #geom_point(data =latLongPlotData2, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "blue") +
     geom_point(data =mhp_clean, aes(x=as.numeric(longitude), y=as.numeric(latitude)),  color = "deepskyblue")
 
 suppressWarnings(print(plt))
-#ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/overlays", device = "png")
+ggsave(filename = "mh_depress_overlay.png", path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/overlays", device = "png")
 
