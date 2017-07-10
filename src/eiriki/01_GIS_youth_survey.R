@@ -102,7 +102,8 @@ plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
     fill = as.numeric(Depressive_Symptoms)), color = "black") +
     labs(title = "% of Students reporting Depressive Symptoms") +
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26, labels("%")) +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
+                         guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt))
 
 #~~~~~~~HEATMAPS FOR 10TH and 12TH GRADES note that midpoints will be different
