@@ -139,7 +139,7 @@ suppressWarnings(print(plt2))
 plt3 <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
                                               fill = as.numeric(Suicide_Attempt)), color = "black") +
-    labs(title = "% of 10th Grade Students attempted suicide") +
+    labs(title = "% of Overall Grade Students attempted suicide") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 6,
                          guide = guide_colourbar(title = "Percent"))
 suppressWarnings(print(plt3))

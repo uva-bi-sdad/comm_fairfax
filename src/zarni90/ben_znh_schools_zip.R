@@ -57,6 +57,8 @@ county <- readShapePoly("GISData/Fairfax_County_Border/Fairfax_County_Border.shp
                         proj4string=CRS('+proj=longlat +ellps=WGS84'))
 zip <- readShapePoly("GISData/ZIP_Codes/ZIP_Codes.shp",
                      proj4string=CRS('+proj=longlat +ellps=WGS84'))
+names(zip@data)
+length(zip@data$ZIPCODE)
 
 #Give polygon GIS data to highSchool
 highSchool <- readShapePoly("GISData/High_School_Pyramids/High_School_Attendance_Areas.shp",
@@ -125,12 +127,15 @@ nrow(highSchool_count)
 
 length(mhp_per_sch$OBJECTID)
 
-#This converts the polygon object to a dataframe that includes all the points that would the 25 high school polygons
+#CHECK COMMENTS HERE!
+#This converts the polygon object to a dataframe that includes all the points that make the 25 high school polygons
 highSchool_count <- fortify(highSchool)
 
 names(highSchool_count)
 nrow(highSchool_count)
 
+
+#IN CENSUS BLOCK: YOU WILL HAVE MORE UNIQUE IDS:
 #25 unique objects here
 length(unique(highSchool_count$id))
 

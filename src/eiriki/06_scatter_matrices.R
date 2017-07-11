@@ -1,5 +1,7 @@
 #doing a multiple scatterplot for regression on aggregates
 library(car)
+library(readxl)
+
 setwd('~/git/lab/comm_fairfax/')
 HS_Pyramid_Report <- read_excel("data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
                                 sheet = "8-10-12 Results by Pyramid")
@@ -20,4 +22,11 @@ HS_Pyramid_Report[,4:28] <- sapply(HS_Pyramid_Report[4:28], as.numeric)
 scatterplotMatrix(~Depressive_Symptoms+Suicide_Consider+Suicide_Attempt+Stress_High, data=HS_Pyramid_Report)
 
 #matrix for food insecurity, parent help, daily fitness, drug use.
-scatterplotMatrix(~Depressive_Symptoms+Binge_Drinking+Physical_Activity_None+Food_Insecurity, data=HS_Pyramid_Report)
+scatter1 <-scatterplotMatrix(~Depressive_Symptoms+Food_Insecurity+Physical_Activity_None+Parent_Help_Available+Extracurricular_Regularly, data=HS_Pyramid_Report)
+
+#multiple linear regression
+fit <- glm(Depressive_Symptoms~Food_Insecurity+Physical_Activity_None+Parent_Help_Available+Extracurricular_Regularly, data=HS_Pyramid_Report)
+summary(fit)
+plot(fit)
+
+

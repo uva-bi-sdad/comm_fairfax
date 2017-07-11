@@ -136,14 +136,18 @@ suppressWarnings(print(plt))
 ### Let's DRAW a ACS INCOME MAP BY SCHOOL BOUNDARY TO CATCH the Rich folks AT MCCLEAN!
 ```{r}
 #Based on Bianica's Code
+
+#WE ARE SUPPLYING IDS to the 25 HIGH SCHOOL BOUNDARIES!INFORMATION WE HAVE. WE WANT TO USE THIS TO MATCH IT UP WITH 25 POLYGONS
 names(highSchool@data)
 highSchool@data$id <- rownames(highSchool@data)
 highSchool@data$id
 
 #Convert Polygon information into data frame is what fortify does
+#THESE 25 POLYGONS HAVE IDS WHEN YOU FORTIFY IT. THOSE IDS MATCH UP WITHT HE ABOVE ONE!
 highSchool.points <- fortify(highSchool)
 names(highSchool.points)
 
+#ADDED THE INFORMATION WE WANT TO OVERLAY BY: IN THIS CASE mhp_per_sch/Mental Health Service Provider by School
 highSchool.df <- left_join(highSchool.points, highSchool@data, by = "id")
 highSchool.df <- left_join(highSchool.df, mhp_per_sch, by = "OBJECTID")
 
