@@ -1,6 +1,7 @@
 # this script will make bar charts to compare the 5 regions
 library(readxl)
 library(ggplot2)
+library(scales)
 
 HS_Pyramid_Report <- read_excel("~/git/lab/comm_fairfax/data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
                                 sheet = "8-10-12 Results by Pyramid")
