@@ -88,6 +88,8 @@ library(sp)
 #load in API key
 api.key.install("a6f5f5a822ad65a230b64f035337bb393b404bb7")
 
+
+#MODIFY THE ZIP MATCHERS HERE TO RUN ONLY FAIRFAX!
 #to call in tables
 zip_matcher <- function(tablecode, ziplist){
     #Get everything in zip code
@@ -133,6 +135,8 @@ acs_RAC1P <- zip_matcher("C02003",zipdat$zip)
 # 7 .Native Hawaiian and Other Pacific Islander alone
 # 8 .Some Other Race alone
 # 9 .Two or More Races
+
+#Check ACS Table breakdowns here to understand what Josh is doing.
 acs_RAC1P2 <- data.frame(zipcode=acs_RAC1P$zipcode, 'white'=acs_RAC1P[,4],
                          'black'=acs_RAC1P[,5],
                          #'cat3_4_5_7'=rowSums(acs_RAC1P[,c(6,8)]),
@@ -142,10 +146,11 @@ acs_RAC1P2 <- data.frame(zipcode=acs_RAC1P$zipcode, 'white'=acs_RAC1P[,4],
                          'two_or_more'=acs_RAC1P[,10])
 # problem: there still a few zeroes
 # do some cheap 'zero inflation'
+#This is where some people do not exist in some ZCTAs. So, we have to impute people into those ZCTAs assuming, we are only drawing from a sample.
 acs_RAC1P3 <- acs_RAC1P2
 acs_RAC1P3[ acs_RAC1P3 < 100 ] <- 100
-acs_RAC1P_prob <- acs_RAC1P3[2:ncol(acs_RAC1P3)]/rowSums(acs_RAC1P3[2:ncol(acs_RAC1P3)])
-acs_RAC1P_prob <- cbind(zipcode=acs_RAC1P$zipcode, acs_RAC1P_prob)
+acs_RAC1P_prob <- acs_RAC1P3[2:ncol(acs_RAC1P3)]/rowSums(acs_RAC1P3[2:ncol(acs_RAC1P3)]) #We calculate the marginal probabilities for a person from that ACTA
+acs_RAC1P_prob <- cbind(zipcode=acs_RAC1P$zipcode, acs_RAC1P_prob) #Recombine this back with Zipcodes
 
 
 
@@ -179,26 +184,30 @@ acs_DREM_prob <- cbind(zipcode=acs_DREM$zipcode, acs_DREM_prob)
 
 # match on these four for now; hold off on ENG, PAP, PINCP
 
-
 # -----------------------------------------------------------------------
 # draw imputed samples from the marginal distribution (independantly for each person)
 # marginal weights are the product of marginal probabilities for each variable
 # -----------------------------------------------------------------------
 
+
+#Need to fix the row subset from here. It's not 1:nrow()
 imp_draws <- list()
 for(i in 1:5) {
     imp_draws[[i]] <- cbind(zipcode=ffx_person$ZCTAS,complete(mice.out,i)[1:nrow(ffx_person),])
 }
 
+#Marginal weights ::
 marginal_weights <- matrix(NA,nrow=nrow(imp_draws[[1]]),ncol=length(imp_draws))
 marginal_samp_prob <- matrix(NA,nrow=nrow(imp_draws[[1]]),ncol=length(imp_draws))
 
+#UNDERSTAND THIS LATER: PRETTY CLOSE
+#This is the Key Function:
 acs_marginal <- function(zip_codes, values, acs_prob, value_to_column) {
-    rownum <- match(zip_codes,acs_prob$zipcode)
-    colnum <- value_to_column[values]
-    weights <- rep(NA,length(rownum))
-    for(i in 1:length(rownum)){ weights[i] <- acs_prob[rownum[i],colnum[i]] }
-    return(weights)
+    rownum <- match(zip_codes,acs_prob$zipcode) #Matching rows by zipcode
+    colnum <- value_to_column[values] #Confused with this part here # Mtching to ACS mtrix: 1st person white comes fro PUMS data; Check and document
+    weights <- rep(NA,length(rownum)) #However many rows we have
+    for(i in 1:length(rownum)){ weights[i] <- acs_prob[rownum[i],colnum[i]] } #What is acs_prob doing? Where are you summing here? #acs probability matrix 2:6: Only 1 value: The person is White: Vectorize it
+    return(weights) #For each row and column we have a weight
 }
 
 
@@ -209,7 +218,7 @@ for(i in 1:length(imp_draws)){
     marginal_weights[,i] <-
         acs_marginal(imp_draws[[i]]$zipcode,imp_draws[[i]]$RAC1P,
                      acs_RAC1P_prob,value_to_column <- c(2,3,5,5,5,4,5,5,6)) *
-        acs_marginal(imp_draws[[i]]$zipcode,imp_draws[[i]]$DREM,
+        acs_marginal(imp_draws[[i]]$zipcode,imp_drsaws[[i]]$DREM,
                      acs_DREM_prob,value_to_column <- 2:4) *
         acs_marginal(imp_draws[[i]]$zipcode,imp_draws[[i]]$SEX,
                      acs_SEX_prob,value_to_column <- 2:3) *

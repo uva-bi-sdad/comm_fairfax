@@ -2,6 +2,10 @@ library(ggplot2)
 library(mice)
 library(dplyr)
 library(mi)
+library(MASS)
+library(normalr)
+library(caret)
+library(car)
 
 #Clear everything in the environment
 rm(list = ls())
@@ -35,10 +39,12 @@ summary(pums_person_interest$PINCP)
 length(sum(pums_person_interest$PINCP < 0)) # Only 1 is less than 0
 pums_person_interest$PINCP[pums_person_interest$PINCP < 0] <- 0
 pums_person_interest$PINCP[which(is.na(pums_person_interest$PINCP))] <- 0 #Making all the NAs become zero
-hist(pums_person_interest$PINCP)
-test <- pums_person_interest$PINCP
-test <- log(test)
-hist(test) #This is more normal looking
+
+#Left Skewed
+plot(density(log(pums_person_interest$PINCP)))
+
+#Set everything below 200 too 200 and redraw plot
+
 
 #DREM
 length(which(is.na(pums_person_interest$DREM))) #4230 has NA values. N/A refers to less than 5 years old. We are imputing value 3 to it.
@@ -53,7 +59,15 @@ pums_person_interest$ENG[which(is.na(pums_person_interest$ENG))] <- 5
 #Cap this at 2,000 and do log transform
 #Check if it's normal
 length(which(is.na(pums_person_interest$PAP))) #NA refers to less than 15 years old
+summary(pums_person_interest$PAP) #PMM Match. Switch. Perfect!
+hist(pums_person_interest$PAP, xlim = c(1,250), breaks = 200)
+hist(pums_person_interest$PAP, xlim = c(1,2500), breaks = 250000)
+pums_person_interest$PAP[pums_person_interest$PAP > 2000] <- 2000
 pums_person_interest$PAP[which(is.na(pums_person_interest$PAP))] <- 0 #Ma
+plot(density(pums_person_interest$PAP))
+test2 <- log(pums_person_interest$PAP)
+
+plot(density(test2))
 
 #RACE : NO NAs. Everything is good
 length(which(is.na(pums_person_interest$RAC1P)))
@@ -64,6 +78,10 @@ length(which(is.na(pums_person_interest$SEX)))
 #AGEP : NO NAs. Everything is good
 #Do the PMM matching. Looking at the distribution first and see what's going on?
 length(which(is.na(pums_person_interest$AGEP))) #AGEP
+plot(density(log(pums_person_interest$AGEP)))
+
+
+
 md.pattern(pums_person_interest)
 write.csv(pums_person_interest, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest.csv")
 
@@ -105,7 +123,7 @@ names(pums_combined)
 
 #FIXING THE NAS IN ALL THE ROWS
 #CHECK HOW MANY NAS FOR EACH ROW AND EXPLAIN WHY YOU IMPUTE IT THAT WAY
-
+s
 #Making sure Variables that need to be factors are factors
 pums_combined$RAC1P <- as.factor(pums_combined$RAC1P)
 pums_combined$SEX <- as.factor(pums_combined$SEX)
