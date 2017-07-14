@@ -19,6 +19,7 @@ library(sp)
 library(readxl)
 library(gridExtra)
 library(grid)
+library(ggrepel)
 
 #~~~~~~~~~~~start copying the geographic code from zarni for GIS
 mgmap <- get_map(location=c(-77.7173, 38.5976, -76.8686, 39.0682), source = "google", color = "bw")
@@ -110,9 +111,10 @@ highSchool.df <- left_join(highSchool.points, highSchool@data, by = "id")
 highSchool.df <- left_join(highSchool.df, highSchool_percent_count, by = "OBJECTID")
 
 #make the labels for fairfax, lee, and mount vernon
-centroids.df <- as.data.frame(coordinates(subset(highSchool, SCHOOL_NAM == 'FAIRFAX' | SCHOOL_NAM == 'LEE' |SCHOOL_NAM == 'MOUNT VERNON')))
+centroids.df <- as.data.frame(coordinates(highSchool))
 names(centroids.df) <- c("Longitude", "Latitude")
-centroids.df$id <- c('FAIRFAX', 'LEE', 'MOUNT VERNON')
+centroids.df$id <- highSchool$SCHOOL_NAM
+centroids.df <- left_join(centroids.df, highSchool_percent_count, by =c("id"= "Pyramid"))
 
 #EXAMPLE HEATMAP WITH BAR CHART IN DECREASING ORDER
 #Overall heatmap for Depressive symptoms
@@ -137,7 +139,8 @@ plt <-ggplot(highSchool) +
             axis.title.y=element_blank(),
             panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
             panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
+    geom_text_repel(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Depressive_Symptoms,sep='\n'))
+                     , color = "black", size = 2.75)
 both1 <- grid.arrange(plt,bchart, ncol = 2, top = textGrob('% of Overall Students reporting Depressive Symptoms', gp=gpar(fontsize=20)))
 #use this to save ggsave(both1, filename = "over_depress_with_bar.png",
 #path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/with_bar_chart",
