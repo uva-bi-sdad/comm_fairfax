@@ -1,3 +1,4 @@
+#this script will be for heat map to heat map comparisons
 #data exploration: heat maps and bar charts side by side
 #this is the code for overlay youth survey onto school bounds
 library(rgdal)
@@ -113,18 +114,9 @@ highSchool.df <- left_join(highSchool.df, highSchool_percent_count, by = "OBJECT
 centroids.df <- as.data.frame(coordinates(subset(highSchool, SCHOOL_NAM == 'FAIRFAX' | SCHOOL_NAM == 'LEE' |SCHOOL_NAM == 'MOUNT VERNON')))
 names(centroids.df) <- c("Longitude", "Latitude")
 centroids.df$id <- c('FAIRFAX', 'LEE', 'MOUNT VERNON')
-
+centroids.df <- left_join(centroids.df, highSchool_percent_count, by =c("id"= "Pyramid"))
 #EXAMPLE HEATMAP WITH BAR CHART IN DECREASING ORDER
-#Overall heatmap for Depressive symptoms
-#make a bar chart that is ordered from high to low depressive symptoms
-bchart <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(Depressive_Symptoms)),
-                                               y= Depressive_Symptoms, fill = as.numeric(Depressive_Symptoms))) +
-    geom_bar(stat = 'identity')+
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26)+
-    guides(fill = FALSE) +
-    labs( x= 'High School Pyramid') +
-    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1)) +
-    scale_y_continuous(name="Percent", breaks = seq(20,32,1),limits=c(20, 32),oob = rescale_none)
+#Overall heatmap for Depressive symptoms and food security
 #make the same heatmap as before but hide all elements so it's legible
 plt <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
@@ -132,26 +124,14 @@ plt <-ggplot(highSchool) +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
     theme(axis.line=element_blank(),axis.text.x=element_blank(),
-            axis.text.y=element_blank(),axis.ticks=element_blank(),
-            axis.title.x=element_blank(),
-            axis.title.y=element_blank(),
-            panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-            panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
-both1 <- grid.arrange(plt,bchart, ncol = 2, top = textGrob('% of Overall Students reporting Depressive Symptoms', gp=gpar(fontsize=20)))
-#use this to save ggsave(both1, filename = "over_depress_with_bar.png",
-#path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/with_bar_chart",
-#device = "png", width=20,height=11.25,scale=1)
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())+
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Depressive_Symptoms,sep=': ')
+                                       ), color = "black", size = 4, angle=35, vjust = -.15)
 
-#FOOD INSECURITY
-bchart2 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(Food_Insecurity)),
-                                               y= Food_Insecurity, fill = as.numeric(Food_Insecurity))) +
-    geom_bar(stat = 'identity')+
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 18.99)+
-    labs( x= 'High School Pyramid') +
-    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1)) +
-    scale_y_continuous(name="Percent", breaks = seq(5,33,1),limits=c(5, 33),oob = rescale_none)+
-    guides(fill = FALSE)
 plt2 <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Food_Insecurity)), color = "black") +
@@ -163,19 +143,26 @@ plt2 <-ggplot(highSchool) +
           axis.title.y=element_blank(),
           panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
           panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
-both2 <- grid.arrange(plt2,bchart2, ncol = 2, top = textGrob('% of Overall Students reporting Food Insecurity', gp=gpar(fontsize=20)))
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Food_Insecurity,sep=': ')
+                                       ), color = "black", size = 4, angle=35, vjust = -.15)
+both1 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students reporting Depressive Symptoms vs.
+                                                           Food Insecurity', gp=gpar(fontsize=20)))
+###doing depression with physical none
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())+
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Depressive_Symptoms,sep=': ')
+    ), color = "black", size = 4, angle=35, vjust = -.15)
 
-#Physical Activity None
-bchart3 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(Physical_Activity_None)),
-                                                y= Physical_Activity_None, fill = as.numeric(Physical_Activity_None))) +
-    geom_bar(stat = 'identity')+
-    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 13.46)+
-    guides(fill = FALSE)+
-    labs( x= 'High School Pyramid') +
-    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1))+
-    scale_y_continuous(name="Percent", breaks = seq(8,19,1),limits=c(8, 19),oob = rescale_none)
-plt3 <-ggplot(highSchool) +
+plt2 <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Physical_Activity_None)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 13.46,
@@ -186,19 +173,26 @@ plt3 <-ggplot(highSchool) +
           axis.title.y=element_blank(),
           panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
           panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
-both3 <- grid.arrange(plt3,bchart3, ncol = 2, top = textGrob('% of Overall Students reporting No daily physical activity',gp=gpar(fontsize=20)))
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Physical_Activity_None,sep=': ')
+    ), color = "black", size = 4, angle=35, vjust = -.15)
+both2 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students reporting Depressive Symptoms vs.
+                                                           No Physical Activity', gp=gpar(fontsize=20)))
+#doing depression vs parent help
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())+
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Depressive_Symptoms,sep=': ')
+    ), color = "black", size = 4, angle=35, vjust = -.15)
 
-#Parent Help Available
-bchart4 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(Parent_Help_Available)),
-                                                y= Parent_Help_Available, fill = as.numeric(Parent_Help_Available))) +
-    geom_bar(stat = 'identity')+
-    scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 79.75)+
-    labs( x= 'High School Pyramid') +
-    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1)) +
-    scale_y_continuous(name="Percent", breaks = seq(73,87,1),limits=c(73, 87),oob = rescale_none)+
-    guides(fill = FALSE)
-plt4 <-ggplot(highSchool) +
+plt2 <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Parent_Help_Available)), color = "black") +
     scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 79.75,
@@ -209,19 +203,26 @@ plt4 <-ggplot(highSchool) +
           axis.title.y=element_blank(),
           panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
           panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
-both4 <- grid.arrange(plt4,bchart4, ncol = 2, top = textGrob('% of Overall Students reporting Parent Help',gp=gpar(fontsize=20)))
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Parent_Help_Available,sep=': ')
+    ), color = "black", size = 4, angle=35, vjust = -.15)
+both3 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students reporting Depressive Symptoms vs.
+                                                           Parent Help Available', gp=gpar(fontsize=20)))
+#doing depression vs extrareg
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())+
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Depressive_Symptoms,sep=': ')
+    ), color = "black", size = 4, angle=35, vjust = -.15)
 
-#Extracurricular Regularly
-bchart5 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(Extracurricular_Regularly)),
-                                                y= Extracurricular_Regularly, fill = as.numeric(Extracurricular_Regularly))) +
-    geom_bar(stat = 'identity')+
-    scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 72.06)+
-    guides(fill =FALSE)+
-    labs( x= 'High School Pyramid') +
-    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1))+
-    scale_y_continuous(name="Percent", breaks = seq(58,87,1),limits=c(58, 87),oob = rescale_none)
-plt5 <-ggplot(highSchool) +
+plt2 <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Extracurricular_Regularly)), color = "black") +
     scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 72.06,
@@ -232,5 +233,12 @@ plt5 <-ggplot(highSchool) +
           axis.title.y=element_blank(),
           panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
           panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
-both5 <- grid.arrange(plt5,bchart5, ncol = 2, top = textGrob('% of Overall Students reporting Extracurricular Regularly',gp=gpar(fontsize=20)))
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Extracurricular_Regularly,sep=': ')
+    ), color = "black", size = 4, angle=35, vjust = -.15)
+both4 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students reporting Depressive Symptoms vs.
+                                                           Extracurricular Regularly', gp=gpar(fontsize=20)))
+
+
+#use this to save ggsave(both1, filename = "over_depress_with_bar.png",
+#path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/with_bar_chart",
+# #device = "png", width=20,height=11.25,scale=1)
