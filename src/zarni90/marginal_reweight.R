@@ -7,16 +7,6 @@
 # load in, analyze the imputed samples
 #PUMS CHANGE IN MARGINAL DISTRIBUTION
 
-#
-#
-
-##
-
-
-##
-
-
-
 #ZCTAs slightly beyond  high school boundaries
 #uniform address:
 
@@ -28,7 +18,7 @@ library(mice)
 # columns: RAC1P, SEX, AGEP, DREM, PINCP, PAP, ENG
 
 # get the first imputed sample
-test <- complete(mice.out,1)
+test <- mice::complete(mice.out,1)
 
 # RAC1P: 1-9
 # SEX: 1-2
@@ -177,6 +167,11 @@ acs_SEX_prob <- acs_SEX2[2:ncol(acs_SEX2)]/rowSums(acs_SEX2[2:ncol(acs_SEX2)])
 acs_SEX_prob <- cbind(zipcode=acs_SEX$zipcode, acs_SEX_prob)
 
 
+#What is under acs_sex?
+#It's going to be the same table code
+View(acs_SEX)
+
+
 acs_AGEP2 <- data.frame(zipcode=acs_SEX$zipcode,
                         age0_25=rowSums( acs_SEX[,c(4:11,28:35)]),
                         age25_50=rowSums( acs_SEX[,c(12:16,36:40)] ),
@@ -200,6 +195,22 @@ acs_DREM_prob <- acs_DREM2[2:ncol(acs_DREM2)]/rowSums(acs_DREM2[2:ncol(acs_DREM2
 acs_DREM_prob <- cbind(zipcode=acs_DREM$zipcode, acs_DREM_prob)
 
 # match on these four for now; hold off on ENG, PAP, PINCP
+
+#for ENG
+acs_ENG <- zip_matcher("B16001", zipdat$zip)
+View(acs_ENG)
+#English: Speaks very well AND Speaks English Less than Well # ACS: 5 years and over
+#English: Lessthan 5 years old/speaks only English (Very well, well, Not well, not at all)
+
+#for PAP
+acs_PAP <- zip_matcher("B19057",zipdat$zip)
+View(acs_PAP)
+
+#for PINCP # Has to be manually downloaded: It only has 2015- 5 year estimates.
+acs_PINCP <- zip_matcher("S1901", zipdat$zip)
+
+
+
 
 # -----------------------------------------------------------------------
 # draw imputed samples from the marginal distribution (independantly for each person)
