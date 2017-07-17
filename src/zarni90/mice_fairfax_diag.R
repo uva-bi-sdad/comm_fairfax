@@ -6,7 +6,7 @@ library(lattice)
 
 #Loading the R.Data file
 #Imputed data
-fairfax_imputed <- load("./data/comm_fairfax/working/miceoutput.Rdata")
+fairfax_imputed <- load("./data/comm_fairfax/working/miceoutput3.Rdata")
 #Original data file
 fairfax_original <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest.csv")
 

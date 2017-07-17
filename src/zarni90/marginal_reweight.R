@@ -292,6 +292,7 @@ for(i in 1:ndraws){
 #
 #Fixed numdraws to ndraws
 #Fixed marginal_weights[i,1:ndraws]
+#FIX THE CODE HERE!
 for(i in 1:nrow(imp_draws_weighted[[i]])){
     ind_draw <- sample(size=ndraws, x=1:ndraws, prob=marginal_weights[i,1:ndraws], replace=TRUE)
     browser()
