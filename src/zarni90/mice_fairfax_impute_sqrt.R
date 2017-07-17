@@ -44,12 +44,13 @@ pums_person_interest$PINCP[which(is.na(pums_person_interest$PINCP))] <- 0 #Makin
 
 #Left Skewed. #Predictive Mean Modeling might be best. No matter what I impute, it's getting bi-model
 #Or right skewed!
-plot(density(pums_person_interest$PINCP))
-plot(density(sqrt(pums_person_interest$PINCP)))
-plot(density(pums_person_interest$PINCP ** (1/3)) )
-plot(density(pums_person_interest$PINCP ** (1/4)) )
-plot(density(pums_person_interest$PINCP ** (1/100)) )
+# plot(density(pums_person_interest$PINCP))
+# plot(density(sqrt(pums_person_interest$PINCP)))
+# plot(density(pums_person_interest$PINCP ** (1/3)) )
+# plot(density(pums_person_interest$PINCP ** (1/4)) )
+# plot(density(pums_person_interest$PINCP ** (1/100)) )
 
+#Transform by cubic root here.
 pums_person_interest$PINCP <- pums_person_interest$PINCP ** (1/3)
 
 
@@ -118,17 +119,18 @@ length(which(is.na(pums_person_interest$SEX)))
 
 #AGEP : NO NAs. Everything is good
 #Do the PMM matching. Looking at the distribution first and see what's going on?
-length(which(is.na(pums_person_interest$AGEP))) #AGEP
-plot(density(log(pums_person_interest$AGEP)))
-plot(density(pums_person_interest$AGEP))
-plot(density(pums_person_interest$AGEP ** (1/(1.5))))
-plot(density(sqrt(pums_person_interest$AGEP)))
-plot(density(pums_person_interest$AGEP ** (1/3)))
-plot(density(pums_person_interest$AGEP ** (1/4)))
+# length(which(is.na(pums_person_interest$AGEP))) #AGEP
+# plot(density(log(pums_person_interest$AGEP)))
+# plot(density(pums_person_interest$AGEP))
+# plot(density(pums_person_interest$AGEP ** (1/(1.5))))
+# plot(density(sqrt(pums_person_interest$AGEP)))
+# plot(density(pums_person_interest$AGEP ** (1/3)))
+# plot(density(pums_person_interest$AGEP ** (1/4)))
 
 
 #Transform
 #pums_person_interest$AGEP <- log(pums_person_interest$AGEP)
+pums_person_interest$AGEP <- pums_person_interest$AGEP ** (1/(1.5))
 
 #Check if all has been taken care of for missing
 md.pattern(pums_person_interest)

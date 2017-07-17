@@ -8,7 +8,7 @@ library(lattice)
 #Imputed data
 fairfax_imputed <- load("./data/comm_fairfax/working/miceoutput3_power_transform.Rdata")
 #Original data file
-fairfax_original <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/PUMS_person_interest.csv")
+fairfax_original <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest.csv")
 
 class(mice.out)
 #get the imputed data set out
@@ -90,6 +90,11 @@ barplot(table(fairfax_original$ENG), main = "Original English Language")
 #Experimental Pairs
 pairs(fairfax_original[,2:8])
 pairs(fairfax_imputed_final)
+
+#Age and Income: Turns them into Come
+#The way that ACS has cut them.
+
+#Predictive Mean Matching
 
 
 
