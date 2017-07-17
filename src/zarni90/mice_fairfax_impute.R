@@ -4,8 +4,8 @@ library(dplyr)
 library(mi)
 library(MASS)
 library(normalr)
-library(caret)
-library(car)
+#library(caret)
+#library(car)
 
 #Clear everything in the environment
 rm(list = ls())
@@ -40,20 +40,33 @@ length(sum(pums_person_interest$PINCP < 0)) # Only 1 is less than 0
 pums_person_interest$PINCP[pums_person_interest$PINCP < 0] <- 0
 pums_person_interest$PINCP[which(is.na(pums_person_interest$PINCP))] <- 0 #Making all the NAs become zero
 
-#Left Skewed
+#Left Skewed. #Predictive Mean Modeling might be best. No matter what I impute, it's getting bi-model
+#Or right skewed!
 plot(density(log(pums_person_interest$PINCP)))
 
-#Set everything below 200 too 200 and redraw plot
+length(pums_person_interest$PINCP[pums_person_interest$PINCP < 200])
+length(pums_person_interest$PINCP)
+test <- (pums_person_interest$PINCP[pums_person_interest$PINCP > 200])
+plot(density(test))
+summary(test)
+length(pums_person_interest$PINCP[pums_person_interest$PINCP > 100000])
+length(pums_person_interest$PINCP)
 
+#Set everything below 200 too 200 and redraw plot
+#pums_person_interest$PINCP[pums_person_interest$PINCP < 200] <- 200
+plot(density(log(pums_person_interest$PINCP)))
+pums_person_interest$PINCP <- log(pums_person_interest$PINCP)
+plot(density(pums_person_interest$PINCP))
 
 #DREM
 length(which(is.na(pums_person_interest$DREM))) #4230 has NA values. N/A refers to less than 5 years old. We are imputing value 3 to it.
 unique(pums_person_interest$DREM) # 2 NA 1
 pums_person_interest$DREM[which(is.na(pums_person_interest$DREM))] <- 3
-
+unique(pums_person_interest$DREM)
 #ENG
 length(which(is.na(pums_person_interest$ENG))) #72741 has NA values. N/A refers to less than 5 years old or speaks only English: We will impute it by 5
 pums_person_interest$ENG[which(is.na(pums_person_interest$ENG))] <- 5
+unique(pums_person_interest$ENG)
 
 #PAP
 #Cap this at 2,000 and do log transform
@@ -68,6 +81,7 @@ plot(density(pums_person_interest$PAP))
 test2 <- log(pums_person_interest$PAP)
 
 plot(density(test2))
+length (pums_person_interest$PAP[pums_person_interest$PAP == 0]) #Majority is zero
 
 #RACE : NO NAs. Everything is good
 length(which(is.na(pums_person_interest$RAC1P)))
@@ -105,20 +119,19 @@ pums_all_fairfax$ZCTAS <- zip_vectir
 #Adding ZCTAs to Fairfax data frame
 
 #Write this out for JOSH
-#write.csv(pums_all_fairfax, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
-#pums_all_fairfax <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
+write.csv(pums_all_fairfax, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
+pums_all_fairfax <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
 #View(pums_all_fairfax)
 #Making sure the pums_person file has the same number of columns
 pums_person_interest$ZCTAS <- NA
 ncol(pums_person_interest)
 names(pums_person_interest)
 ncol(pums_all_fairfax)
-#pums_all_fairfax <- pums_all_fairfax[-1]
+pums_all_fairfax <- pums_all_fairfax[-1]
 names(pums_all_fairfax)
 
 pums_combined <- rbind(pums_person_interest, pums_all_fairfax)
 names(pums_combined)
-#write.csv(pums_combined, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
 
 
 #FIXING THE NAS IN ALL THE ROWS
@@ -129,8 +142,9 @@ pums_combined$RAC1P <- as.factor(pums_combined$RAC1P)
 pums_combined$SEX <- as.factor(pums_combined$SEX)
 pums_combined$DREM <- as.factor(pums_combined$DREM)
 pums_combined$ENG <- as.factor(pums_combined$ENG)
+write.csv(pums_combined, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
 
-
+unique(pums_combined$RAC1P)
 
 
 
@@ -142,10 +156,13 @@ pums_combined <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_
 names(pums_combined)
 pums_combined <- pums_combined[-1]
 ncol(pums_combined)
-numdraws <- 5
-niter <- 5
+names(pums_combined)
+unique(pums_combined$DREM)
+
+numdraws <- 1
+niter <- 1
 mice.out <- mice(data=pums_combined%>% dplyr::select(RAC1P,SEX,AGEP,DREM,PINCP, PAP, ENG), m=numdraws,maxit = niter,
-                 method=c("polyreg","logreg","norm","polyreg","norm", "norm", "polyreg"), seed = 1234)
+                 method=c("polyreg","logreg","pmm","polyreg","pmm", "pmm", "polyreg"), seed = 1234)
 
 #ENDS HERE
 

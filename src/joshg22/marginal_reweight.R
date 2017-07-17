@@ -5,7 +5,13 @@
 
 # ------------------------------------------------------------
 # load in, analyze the imputed samples
+#PUMS CHANGE IN MARGINAL DISTRIBUTION
 
+
+#ZCTAs slightly beyond  high school boundaries
+#uniform address:
+
+#2% doesn't have
 load("miceoutput.Rdata")
 library(mice)
 
@@ -20,6 +26,7 @@ test <- complete(mice.out,1)
 # ENG: 1-5
 
 # DREM: 1-3 (Zarni coded 3 as 'under 5'. Though ~4% of imputed ended up over 5.
+# Not tht importnt.
 # 1=yes, 2=no
 #   Better to do 1-2 and just set under 5s to NA after?)
 
@@ -29,9 +36,17 @@ test <- complete(mice.out,1)
 sum(test$AGEP < 0) / nrow(test)
 sum(test$AGEP > 100) / nrow(test)
 
+#Bi-modal
+#pums cut it off at 2000
+#If our response looks normal. I will log transform it.
+#Transform it and cap it at a certain value
+
+
 # PAP: continuous, this one is really weird
 # more than half are negative, 7% are zero
 # need to look at distribution in PUMS; remove negative values and outliers, do a transformation
+
+
 sort(table(test$PAP),decreasing=T)[1:10]
 sum(test$PAP >= 0) / nrow(test)
 sum(test$PAP == 0) / nrow(test)
