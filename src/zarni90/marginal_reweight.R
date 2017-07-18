@@ -207,10 +207,9 @@ acs_PAP <- zip_matcher("B19057",zipdat$zip)
 View(acs_PAP)
 
 #for PINCP # Has to be manually downloaded: It only has 2015- 5 year estimates.
-acs_PINCP <- zip_matcher("S1901", zipdat$zip)
 
-
-
+acs_PINCP <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/ACS_15_5YR_S1901_with_ann.csv")
+View(acs_PINCP)
 
 # -----------------------------------------------------------------------
 # draw imputed samples from the marginal distribution (independantly for each person)

@@ -6,9 +6,9 @@ library(lattice)
 
 #Loading the R.Data file
 #Imputed data
-fairfax_imputed <- load("./data/comm_fairfax/working/miceoutput3_power_transform.Rdata")
+fairfax_imputed <- load("./data/comm_fairfax/working/miceoutput_factor.Rdata")
 #Original data file
-fairfax_original <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest.csv")
+fairfax_original <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest_factors.csv")
 
 class(mice.out)
 #get the imputed data set out
@@ -50,14 +50,8 @@ barplot(table(fairfax_original$SEX), main = "Original Sex")
 
 #COMPARING DISTRIBUTION OF AGE # PROBLEM # MAKE SURE AGE CANNOT BE LESS THAN 0 or MORE THAN 100. Maybe use PMM.
 par(mfrow=c(1,2))
-plot(density(fairfax_imputed_final$AGEP), main = "Imputed Age")
-plot(density(fairfax_original$AGEP), main = "Original Age")
-
-par(mfrow=c(1,2))
-plot(density(fairfax_imputed_final$AGEP ** (3/2)), main = "Imputed Age")
-plot(density(fairfax_original$AGEP ** (3/2)), main = "Original Age")
-
-
+barplot(table(fairfax_imputed_final$AGEP), main = "Imputed Age")
+barplot(table(fairfax_original$AGEP), main = "Original Age")
 
 #COMPARING DISTRIBUTION OF Cognitive difficulty
 par(mfrow=c(1,2))
@@ -67,13 +61,8 @@ barplot(table(fairfax_original$DREM), main = "Original Cognitivie Difficulty")
 #COMPARING DISTRIBUTION OF TOTAL PERSON's INCOME# MAKE SURE INCOME CANNOT BE LESS THAN 0
 #Question mark here???
 par(mfrow=c(1,2))
-plot(density(fairfax_imputed_final$PINCP ** (3)), main = "Imputed Income")
-plot(density(fairfax_original$PINCP), main = "Original Income")
-
-par(mfrow=c(1,2))
-plot(density(fairfax_imputed_final$PINCP), main = "Imputed Income")
-plot(density(fairfax_original$PINCP), main = "Original Income")
-
+barplot(table(fairfax_imputed_final$PINCP), main = "Imputed Income")
+barplot(table(fairfax_original$PINCP), main = "Original Income")
 
 
 #COMPARING DISTRIBUTION OF PUBLIC ASSISTANCE INCOME

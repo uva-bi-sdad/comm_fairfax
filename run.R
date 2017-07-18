@@ -3,7 +3,7 @@
 library(mice)
 library(dplyr)
 
-pums_combined <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
+pums_combined <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_combined_factor.csv")
 names(pums_combined)
 pums_combined <- pums_combined[-1]
 ncol(pums_combined)
@@ -12,11 +12,14 @@ pums_combined$SEX <- as.factor(pums_combined$SEX)
 pums_combined$DREM <- as.factor(pums_combined$DREM)
 pums_combined$ENG <- as.factor(pums_combined$ENG)
 pums_combined$PAP <- as.factor(pums_combined$PAP)
+pums_combined$PINCP <- as.factor(pums_combined$PINCP)
+pums_combined$AGEP <- as.factor(pums_combined$AGEP)
+
 
 numdraws <- 1
-niter <- 5
+niter <- 10
 mice.out <- mice(data=pums_combined%>% dplyr::select(RAC1P,SEX,AGEP,DREM,PINCP, PAP, ENG), m=numdraws,maxit = niter,
-                 method=c("polyreg","logreg","norm","polyreg","norm", "logreg", "polyreg"), seed = 1234)
+                 method=c("polyreg","logreg","polyreg","polyreg","polyreg", "logreg", "polyreg"), seed = 1234)
 
 setwd("~/git/comm_fairfax/data/comm_fairfax/working/")
-save(mice.out, file = "miceoutput3.Rdata")
+save(mice.out, file = "miceoutput_factor.Rdata")
