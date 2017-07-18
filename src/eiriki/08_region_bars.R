@@ -107,7 +107,8 @@ bchart <- ggplot(Regions, aes(x = reorder(Pyramid, -as.numeric(Depressive_Sympto
     ggtitle("Average Percent of Students Reporting Depressive Symptoms in each Region")+
     labs(x= 'Region') +
     theme_bw()+
-    theme(axis.text.x=element_text(size = 15), axis.text.y = element_text(size = 15)) +
+    theme(axis.text.x=element_text(size=15), axis.text.y = element_text(size = 15),
+          axis.title.x = element_text(size = 15),axis.title.y = element_text(size = 15)) +
     geom_text(aes(label=c(s1,s2,s3,s4,s5)), position=position_dodge(width=0.4), vjust=-0.25, size = 5) +
     scale_y_continuous(name="Percent", breaks = seq(24,29,1),limits=c(24, 29),oob = rescale_none) +
     theme(plot.title = element_text(size = 20, face = 'bold'))

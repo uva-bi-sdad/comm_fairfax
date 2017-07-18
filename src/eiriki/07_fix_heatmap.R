@@ -125,7 +125,8 @@ bchart <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26)+
     guides(fill = FALSE) +
     labs( x= 'High School Pyramid') +
-    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1)) +
+    theme(axis.text.x=element_text(size=15,angle=45,hjust=1,vjust=1), axis.text.y = element_text(size = 15),
+          axis.title.x = element_text(size = 15),axis.title.y = element_text(size = 15)) +
     scale_y_continuous(name="Percent", breaks = seq(20,32,1),limits=c(20, 32),oob = rescale_none)
 #make the same heatmap as before but hide all elements so it's legible
 plt <-ggplot(highSchool) +
@@ -135,12 +136,13 @@ plt <-ggplot(highSchool) +
                          guide = guide_colourbar(title = "Percent")) +
     theme(axis.line=element_blank(),axis.text.x=element_blank(),
             axis.text.y=element_blank(),axis.ticks=element_blank(),
-            axis.title.x=element_blank(),
+            axis.title.x=element_blank(), legend.key.size = unit(.5, 'in'), legend.text = element_text(size = 15),
+            legend.position = ('left'),
             axis.title.y=element_blank(),
             panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-            panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text_repel(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Depressive_Symptoms,sep='\n'))
-                     , color = "black", size = 2.75)
+            panel.grid.minor=element_blank(),plot.background=element_blank())
+    #geom_text_repel(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,round(Depressive_Symptoms,digits=0),sep='\n'))
+     #                , color = "black", size = 4, nudge_x = -.005, nudge_y = -.0025)
 both1 <- grid.arrange(plt,bchart, ncol = 2, top = textGrob('% of Overall Students reporting Depressive Symptoms', gp=gpar(fontsize=20)))
 #use this to save ggsave(both1, filename = "over_depress_with_bar.png",
 #path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/with_bar_chart",
@@ -152,7 +154,8 @@ bchart2 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric
     geom_bar(stat = 'identity')+
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 18.99)+
     labs( x= 'High School Pyramid') +
-    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1)) +
+    theme(axis.text.x=element_text(size=15,angle=45,hjust=1,vjust=1), axis.text.y = element_text(size = 15),
+          axis.title.x = element_text(size = 15),axis.title.y = element_text(size = 15)) +
     scale_y_continuous(name="Percent", breaks = seq(5,33,1),limits=c(5, 33),oob = rescale_none)+
     guides(fill = FALSE)
 plt2 <-ggplot(highSchool) +
@@ -162,11 +165,12 @@ plt2 <-ggplot(highSchool) +
                          guide = guide_colourbar(title = "Percent")) +
     theme(axis.line=element_blank(),axis.text.x=element_blank(),
           axis.text.y=element_blank(),axis.ticks=element_blank(),
-          axis.title.x=element_blank(),
+          axis.title.x=element_blank(), legend.key.size = unit(.5, 'in'), legend.text = element_text(size = 15),
+          legend.position = ('left'),
           axis.title.y=element_blank(),
           panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-          panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
+          panel.grid.minor=element_blank(),plot.background=element_blank())
+    #geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
 both2 <- grid.arrange(plt2,bchart2, ncol = 2, top = textGrob('% of Overall Students reporting Food Insecurity', gp=gpar(fontsize=20)))
 
 #Physical Activity None
@@ -176,20 +180,22 @@ bchart3 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 13.46)+
     guides(fill = FALSE)+
     labs( x= 'High School Pyramid') +
-    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1))+
+    theme(axis.text.x=element_text(size=15,angle=45,hjust=1,vjust=1), axis.text.y = element_text(size = 15),
+          axis.title.x = element_text(size = 15),axis.title.y = element_text(size = 15)) +
     scale_y_continuous(name="Percent", breaks = seq(8,19,1),limits=c(8, 19),oob = rescale_none)
 plt3 <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x =long, y = lat, group = OBJECTID,
                                            fill = as.numeric(Physical_Activity_None)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 13.46,
                          guide = guide_colourbar(title = "Percent")) +
     theme(axis.line=element_blank(),axis.text.x=element_blank(),
           axis.text.y=element_blank(),axis.ticks=element_blank(),
-          axis.title.x=element_blank(),
+          axis.title.x=element_blank(), legend.key.size = unit(.5, 'in'), legend.text = element_text(size = 15),
+          legend.position = ('left'),
           axis.title.y=element_blank(),
           panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-          panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
+          panel.grid.minor=element_blank(),plot.background=element_blank())
+    #geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
 both3 <- grid.arrange(plt3,bchart3, ncol = 2, top = textGrob('% of Overall Students reporting No daily physical activity',gp=gpar(fontsize=20)))
 
 #Parent Help Available
@@ -198,7 +204,8 @@ bchart4 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric
     geom_bar(stat = 'identity')+
     scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 79.75)+
     labs( x= 'High School Pyramid') +
-    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1)) +
+    theme(axis.text.x=element_text(size=15,angle=45,hjust=1,vjust=1), axis.text.y = element_text(size = 15),
+          axis.title.x = element_text(size = 15),axis.title.y = element_text(size = 15)) +
     scale_y_continuous(name="Percent", breaks = seq(73,87,1),limits=c(73, 87),oob = rescale_none)+
     guides(fill = FALSE)
 plt4 <-ggplot(highSchool) +
@@ -208,11 +215,12 @@ plt4 <-ggplot(highSchool) +
                          guide = guide_colourbar(title = "Percent")) +
     theme(axis.line=element_blank(),axis.text.x=element_blank(),
           axis.text.y=element_blank(),axis.ticks=element_blank(),
-          axis.title.x=element_blank(),
+          axis.title.x=element_blank(), legend.key.size = unit(.5, 'in'), legend.text = element_text(size = 15),
+          legend.position = ('left'),
           axis.title.y=element_blank(),
           panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-          panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
+          panel.grid.minor=element_blank(),plot.background=element_blank())
+    #geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
 both4 <- grid.arrange(plt4,bchart4, ncol = 2, top = textGrob('% of Overall Students reporting Parent Help',gp=gpar(fontsize=20)))
 
 #Extracurricular Regularly
@@ -222,7 +230,8 @@ bchart5 <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric
     scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 72.06)+
     guides(fill =FALSE)+
     labs( x= 'High School Pyramid') +
-    theme(axis.text.x=element_text(angle=45,hjust=1,vjust=1))+
+    theme(axis.text.x=element_text(size=15,angle=45,hjust=1,vjust=1), axis.text.y = element_text(size = 15),
+          axis.title.x = element_text(size = 15),axis.title.y = element_text(size = 15)) +
     scale_y_continuous(name="Percent", breaks = seq(58,87,1),limits=c(58, 87),oob = rescale_none)
 plt5 <-ggplot(highSchool) +
     geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
@@ -231,9 +240,10 @@ plt5 <-ggplot(highSchool) +
                          guide = guide_colourbar(title = "Percent")) +
     theme(axis.line=element_blank(),axis.text.x=element_blank(),
           axis.text.y=element_blank(),axis.ticks=element_blank(),
-          axis.title.x=element_blank(),
+          axis.title.x=element_blank(), legend.key.size = unit(.5, 'in'), legend.text = element_text(size = 15),
+          legend.position = ('left'),
           axis.title.y=element_blank(),
           panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
-          panel.grid.minor=element_blank(),plot.background=element_blank())+
-    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
+          panel.grid.minor=element_blank(),plot.background=element_blank())
+    #geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = id), color = "blue4", size = 5)
 both5 <- grid.arrange(plt5,bchart5, ncol = 2, top = textGrob('% of Overall Students reporting Extracurricular Regularly',gp=gpar(fontsize=20)))
