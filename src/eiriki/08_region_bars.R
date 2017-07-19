@@ -94,7 +94,7 @@ Regions[,5:28] <- Regions[,5:28] *100
 Regions[,5:28] <- round(Regions[,5:28], digits = 2)
 ###########   start making the bar charts
 #making title string to help identify region, add '\n' to specify a newline
-s1 <- 'Herndon, Langley, Madison, \n Oakton'
+s1 <- 'Herndon, Langley, Madison, \n Oakton, South Lakes'
 s2 <-'Annandale, Falls Church, Mclean,\n Marshall, Stuart, Thomas Jefferson'
 s3 <-'Edison, Hayfield, Lee, \n Mount Vernon, West Potomac'
 s4 <-'Centreville, Lake Braddock, Robinson, \n South County, West Springfield'
