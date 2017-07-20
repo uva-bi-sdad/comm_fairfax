@@ -16,7 +16,7 @@ pums_combined$PINCP <- as.factor(pums_combined$PINCP)
 pums_combined$AGEP <- as.factor(pums_combined$AGEP)
 
 
-numdraws <- 1
+numdraws <- 100
 niter <- 10
 mice.out <- mice(data=pums_combined%>% dplyr::select(RAC1P,SEX,AGEP,DREM,PINCP, PAP, ENG), m=numdraws,maxit = niter,
                  method=c("polyreg","logreg","polyreg","polyreg","polyreg", "logreg", "polyreg"), seed = 1234)
