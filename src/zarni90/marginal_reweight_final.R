@@ -67,7 +67,7 @@ sum(test$PINCP < 0) / nrow(test)
 # read in marginal tables by ZCTA
 
 # Tables:
-# S1901: Income in the past 12 months
+# B06010: Place of birth by individual income in the past 12 months (in 2015 adjusted dollars in the U.S)
 # B18104: SEX by AGE by Cognitive Difficulty
 # B16001: Langugage Spoken at Home by ability to speak English for the Population 5 years and over
 # B19057: Public Assistance Income in the past 12 months for Households
@@ -119,6 +119,8 @@ names(zipdat) <- c("zip","n")
 # ------------------------------------------------------------
 
 acs_RAC1P <- zip_matcher("C02003",zipdat$zip)
+View(acs_RAC1P)
+ncol(acs_RAC1P)
 # 1 .White alone
 # 2 .Black or African American alone
 # 3 .American Indian alone
@@ -138,7 +140,10 @@ acs_RAC1P2 <- data.frame(zipcode=acs_RAC1P$zipcode, 'white'=acs_RAC1P[,4],
                          'two_or_more'=acs_RAC1P[,10])
 # problem: there still a few zeroes
 # do some cheap 'zero inflation'
+View(acs_RAC1P2)
+
 acs_RAC1P3 <- acs_RAC1P2
+#WARNING HERE!
 acs_RAC1P3[ acs_RAC1P3 < 100 ] <- 100
 acs_RAC1P_prob <- acs_RAC1P3[2:ncol(acs_RAC1P3)]/rowSums(acs_RAC1P3[2:ncol(acs_RAC1P3)])
 acs_RAC1P_prob <- cbind(zipcode=acs_RAC1P$zipcode, acs_RAC1P_prob)
@@ -151,6 +156,7 @@ acs_SEX2 <- data.frame(zipcode=acs_SEX$zipcode, male=acs_SEX$Sex.by.Age..Male.,
                        female=acs_SEX$Sex.by.Age..Female.)
 acs_SEX_prob <- acs_SEX2[2:ncol(acs_SEX2)]/rowSums(acs_SEX2[2:ncol(acs_SEX2)])
 acs_SEX_prob <- cbind(zipcode=acs_SEX$zipcode, acs_SEX_prob)
+View(acs_SEX_prob)
 
 
 acs_AGEP2 <- data.frame(zipcode=acs_SEX$zipcode,
@@ -165,6 +171,8 @@ acs_AGE_breaks <- c(-Inf,25,50,75,Inf)
 
 
 acs_DREM <- zip_matcher("B18104",zipdat$zip)
+View(acs_DREM)
+
 # 1=yes, 2=no, 3=under 5
 acs_DREM2 <- data.frame(zipcode=acs_DREM$zipcode,
                         cognitive_difficulty = rowSums( acs_DREM[,c(5,8,11,14,17,21,24,27,30,33)] ),
@@ -175,6 +183,35 @@ acs_DREM_prob <- cbind(zipcode=acs_DREM$zipcode, acs_DREM_prob)
 
 # match on these four for now; hold off on ENG, PAP, PINCP
 
+#ENGLISH!
+#Questions for Josh: regarding categorizing them
+acs_ENG1 <- zip_matcher("B16001", zipdat$zip)
+View(acs_ENG1)
+names(acs_ENG1)
+
+#PAP
+acs_PAP1 <- zip_matcher("B19057", zipdat$zip)
+View(acs_PAP1)
+#Should I include an option for under 5?
+acs_PAP2 <- data.frame(zipcode = acs_DREM$zipcode,
+                       public_assistance = acs_PAP1[,c(3)],
+                       nopublic_assistance = acs_PAP1[,c(4)])
+acs_PAP2_prob <- acs_PAP2[2:ncol(acs_PAP2)]/rowSums(acs_PAP2[2:ncol(acs_PAP2)])
+
+#PINCP
+acs_PINCP1 <- zip_matcher("B06010", zipdat$zip)
+View(acs_PINCP1)
+acs_PINCP2 <- data.frame(zipcode = acs_PINCP1$zipcode,
+                         income_1 = acs_PINCP1[,c(3,5)],
+                         income_2 = acs_PINCP1[,c(6)],
+                         income_3 = acs_PINCP1[,c(7)],
+                         income_4 = acs_PINCP1[,c(8)],
+                         income_5 = acs_PINCP1[,c(9)],
+                         income_6 = acs_PINCP1[,c(10)],
+                         income_7 = acs_PINCP1[,c(11)],
+                         income_8 = acs_PINCP1[,c(12)])
+acs_PINCP2_prob <- acs_PINCP2[2:ncol(acs_PINCP2)]/rowSums(acs_PINCP2[2:ncol(acs_PINCP2)])
+View(acs_PINCP2_prob)
 
 # -----------------------------------------------------------------------
 # draw imputed samples from the marginal distribution (independantly for each person)
