@@ -8,8 +8,13 @@
 #PUMS CHANGE IN MARGINAL DISTRIBUTION
 
 
+#LEFT TO DO:
+#Uniform distribution attachment:
+
+
 #ZCTAs slightly beyond  high school boundaries
-#uniform address:
+
+
 
 #2% doesn't have
 load("miceoutput.Rdata")
