@@ -188,9 +188,19 @@ acs_DREM_prob <- cbind(zipcode=acs_DREM$zipcode, acs_DREM_prob)
 
 # match on these four for now; hold off on ENG, PAP, PINCP
 
-#ENGLISH!
+#ENGLISH! #DROP THIS FOR NOW
 #Questions for Josh: regarding categorizing them
 acs_ENG1 <- zip_matcher("B16001", zipdat$zip)
+acs_ENG1
+#very well indexes : 3, 5, 8, 11, ... 238
+#less than well indexes : 6, 9, 12,... 239
+#QUERY on how to fix the indexes here!
+acs_ENG2 <- data.frame(zipcode = acs_ENG1$zipcode,
+                       very_well = acs_ENG1[,c()],
+                       not_well = acs_ENG1[,c()])
+acs_ENG2_prob <- acs_ENG2[2:ncol(acs_ENG2)]/rowSums(acs_ENG2[2:ncol(acs_ENG2)])
+
+
 View(acs_ENG1)
 names(acs_ENG1)
 
@@ -207,7 +217,7 @@ acs_PAP2_prob <- acs_PAP2[2:ncol(acs_PAP2)]/rowSums(acs_PAP2[2:ncol(acs_PAP2)])
 acs_PINCP1 <- zip_matcher("B06010", zipdat$zip)
 View(acs_PINCP1)
 acs_PINCP2 <- data.frame(zipcode = acs_PINCP1$zipcode,
-                         income_1 = acs_PINCP1[,c(3,5)],
+                         income_1 = rowSums(acs_PINCP1[,c(3,5)]), #0 and 1-9999 #Row Sums
                          income_2 = acs_PINCP1[,c(6)],
                          income_3 = acs_PINCP1[,c(7)],
                          income_4 = acs_PINCP1[,c(8)],
@@ -216,6 +226,16 @@ acs_PINCP2 <- data.frame(zipcode = acs_PINCP1$zipcode,
                          income_7 = acs_PINCP1[,c(11)],
                          income_8 = acs_PINCP1[,c(12)])
 acs_PINCP2_prob <- acs_PINCP2[2:ncol(acs_PINCP2)]/rowSums(acs_PINCP2[2:ncol(acs_PINCP2)])
+#If the bin size is too
+#Group
+
+
+
+
+
+
+
+
 View(acs_PINCP2_prob)
 
 # -----------------------------------------------------------------------
@@ -223,6 +243,8 @@ View(acs_PINCP2_prob)
 # marginal weights are the product of marginal probabilities for each variable
 # -----------------------------------------------------------------------
 
+
+#change the row number here!
 imp_draws <- list()
 for(i in 1:5) {
     imp_draws[[i]] <- cbind(zipcode=ffx_person$ZCTAS,complete(mice.out,i)[1:nrow(ffx_person),])
@@ -258,6 +280,8 @@ for(i in 1:length(imp_draws)){
 }
 
 # are the sampling probabilities stable?
+# what are we checking for stability here?
+
 sort(marginal_samp_prob[,1],decreasing = T)[1:100]
 sort(marginal_samp_prob[,1],decreasing = F)[1:100]
 max(marginal_samp_prob[,1])/min(marginal_samp_prob[,1])
@@ -266,6 +290,9 @@ max(marginal_samp_prob[,1])/min(marginal_samp_prob[,1])
 # draw samples from the weighted marginal distribution
 # (samples are a list of data frames)
 ndraws <- 1
+
+#This part I might have to ask you again!
+#For the redistricting map, do you draw it from one final imputed data set.
 
 imp_draws_weighted <- list()
 for(i in 1:ndraws){
