@@ -44,10 +44,45 @@ pums_person_interest$PINCP[which(is.na(pums_person_interest$PINCP))] <- 0 #Makin
 
 #Left Skewed. #Predictive Mean Modeling might be best. No matter what I impute, it's getting bi-model
 #Or right skewed!
-plot(density(log(pums_person_interest$PINCP)))
+# plot(density(pums_person_interest$PINCP))
+# plot(density(sqrt(pums_person_interest$PINCP)))
+# plot(density(pums_person_interest$PINCP ** (1/3)) )
+# plot(density(pums_person_interest$PINCP ** (1/4)) )
+# plot(density(pums_person_interest$PINCP ** (1/100)) )
+
+#pums_person_interest$PINCP <- pums_person_interest$PINCP ** (1/3)
+#Changing personal income to factor variable
+pums_person_interest$PINCP[pums_person_interest$PINCP >= 0 & pums_person_interest$PINCP <= 9999 ] <- 1
+pums_person_interest$PINCP[pums_person_interest$PINCP >= 10000 & pums_person_interest$PINCP <= 14999 ] <- 2
+pums_person_interest$PINCP[pums_person_interest$PINCP >= 15000 & pums_person_interest$PINCP <= 24999 ] <- 3
+pums_person_interest$PINCP[pums_person_interest$PINCP >= 25000 & pums_person_interest$PINCP <= 34999 ] <- 4
+pums_person_interest$PINCP[pums_person_interest$PINCP >= 35000 & pums_person_interest$PINCP <= 49999 ] <- 5
+pums_person_interest$PINCP[pums_person_interest$PINCP >= 50000 & pums_person_interest$PINCP <= 64999 ] <- 6
+pums_person_interest$PINCP[pums_person_interest$PINCP >= 65000 & pums_person_interest$PINCP <= 74999 ] <- 7
+pums_person_interest$PINCP[pums_person_interest$PINCP >= 75000] <- 8
+unique(pums_person_interest$PINCP)
+
+#Changing everything into factor
+pums_person_interest$PINCP <- as.factor(pums_person_interest$PINCP)
+
+#Test my assumptions
+# test_income <- pums_person_interest$PINCP
+# length(test_income[test_income == 0]) #22381
+# length(test_income[test_income > 0]) #61091
+# test_income_not_zero <- test_income[test_income > 0]
+# plot(density(test_income_not_zero ** (1/5)) )
+# summary(test_income_not_zero)
+# table(test_income_not_zero)
+# summary(test_income_not_zero)
+# length(test_income_not_zero[test_income_not_zero > 500000]) #106 super wealthy
+# test_income_not_zero_notswealthy <- test_income_not_zero[!test_income_not_zero > 150000]
+# test_income_middle <- test_income_not_zero_notswealthy[!test_income_not_zero_notswealthy < 20000]
+# plot(density(test_income_middle))
+#
+
 
 #Do Transformation Here. We are going to keep PINCP transformation in Log format.
-pums_person_interest$PINCP <- log(pums_person_interest$PINCP)
+#pums_person_interest$PINCP <- log(pums_person_interest$PINCP)
 
 #Some additional explorations
 # length(pums_person_interest$PINCP[pums_person_interest$PINCP < 200])
@@ -64,6 +99,7 @@ length(which(is.na(pums_person_interest$DREM))) #4230 has NA values. N/A refers 
 unique(pums_person_interest$DREM) # 2 NA 1
 pums_person_interest$DREM[which(is.na(pums_person_interest$DREM))] <- 3
 unique(pums_person_interest$DREM)
+
 #ENG
 length(which(is.na(pums_person_interest$ENG))) #72741 has NA values. N/A refers to less than 5 years old or speaks only English: We will impute it by 5
 pums_person_interest$ENG[which(is.na(pums_person_interest$ENG))] <- 5
@@ -97,15 +133,27 @@ length(which(is.na(pums_person_interest$SEX)))
 length(which(is.na(pums_person_interest$AGEP))) #AGEP
 plot(density(log(pums_person_interest$AGEP)))
 plot(density(pums_person_interest$AGEP))
+plot(density(pums_person_interest$AGEP ** (1/(1.5))))
+plot(density(sqrt(pums_person_interest$AGEP)))
+plot(density(pums_person_interest$AGEP ** (1/3)))
+plot(density(pums_person_interest$AGEP ** (1/4)))
+
 
 #Transform
-pums_person_interest$AGEP <- log(pums_person_interest$AGEP)
+#pums_person_interest$AGEP <- pums_person_interest$AGEP ** (1/(1.5))
+
+#Age is also going to be a categorical variable
+pums_person_interest$AGEP[pums_person_interest$AGEP >= 0 & pums_person_interest$AGEP < 25] <- 1
+pums_person_interest$AGEP[pums_person_interest$AGEP >= 25 & pums_person_interest$AGEP < 50] <- 2
+pums_person_interest$AGEP[pums_person_interest$AGEP >= 50 & pums_person_interest$AGEP < 75] <- 3
+pums_person_interest$AGEP[pums_person_interest$AGEP >= 75] <- 4
+unique(pums_person_interest$AGEP)
 
 #Check if all has been taken care of for missing
 md.pattern(pums_person_interest)
 
 #Write it out
-write.csv(pums_person_interest, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest.csv")
+write.csv(pums_person_interest, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest_factors.csv")
 
 #Now, we need to combine it with the rest of empty over 1 million rows and run the initial plots.
 
@@ -151,7 +199,10 @@ pums_combined$SEX <- as.factor(pums_combined$SEX)
 pums_combined$DREM <- as.factor(pums_combined$DREM)
 pums_combined$ENG <- as.factor(pums_combined$ENG)
 pums_combined$PAP <- as.factor(pums_combined$PAP)
-write.csv(pums_combined, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
+pums_combined$PINCP <- as.factor(pums_combined$PINCP)
+pums_combined$AGEP <- as.factor(pums_combined$AGEP)
+
+write.csv(pums_combined, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_combined_factor.csv")
 unique(pums_combined$RAC1P)
 
 
@@ -160,7 +211,7 @@ unique(pums_combined$RAC1P)
 #maxit --: Number of iterations (Default is given as 5)
 #What is a good iterations number?
 #START FROM HERE!!!
-pums_combined <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
+pums_combined <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_combined_factor.csv")
 names(pums_combined)
 pums_combined <- pums_combined[-1]
 ncol(pums_combined)
@@ -173,6 +224,8 @@ pums_combined$SEX <- as.factor(pums_combined$SEX)
 pums_combined$DREM <- as.factor(pums_combined$DREM)
 pums_combined$ENG <- as.factor(pums_combined$ENG)
 pums_combined$PAP <- as.factor(pums_combined$PAP)
+
+unique(pums_combined$ENG)
 
 numdraws <- 1
 niter <- 10

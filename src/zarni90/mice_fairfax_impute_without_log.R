@@ -47,7 +47,7 @@ pums_person_interest$PINCP[which(is.na(pums_person_interest$PINCP))] <- 0 #Makin
 plot(density(log(pums_person_interest$PINCP)))
 
 #Do Transformation Here. We are going to keep PINCP transformation in Log format.
-pums_person_interest$PINCP <- log(pums_person_interest$PINCP)
+#pums_person_interest$PINCP <- log(pums_person_interest$PINCP)
 
 #Some additional explorations
 # length(pums_person_interest$PINCP[pums_person_interest$PINCP < 200])
@@ -99,13 +99,15 @@ plot(density(log(pums_person_interest$AGEP)))
 plot(density(pums_person_interest$AGEP))
 
 #Transform
-pums_person_interest$AGEP <- log(pums_person_interest$AGEP)
+#pums_person_interest$AGEP <- log(pums_person_interest$AGEP)
 
 #Check if all has been taken care of for missing
 md.pattern(pums_person_interest)
 
+pums_person_interest_no_log <- pums_person_interest
+
 #Write it out
-write.csv(pums_person_interest, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest.csv")
+write.csv(pums_person_interest_no_log, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest.csv")
 
 #Now, we need to combine it with the rest of empty over 1 million rows and run the initial plots.
 
@@ -126,9 +128,11 @@ zip_vectir <- rep(fairfax_pop$ZCTA5, times = fairfax_pop$POPPT)
 pums_all_fairfax$ZCTAS <- zip_vectir
 #Adding ZCTAs to Fairfax data frame
 
+pums_all_fairfax_nolog <- pums_all_fairfax
+
 #Write this out for JOSH
-write.csv(pums_all_fairfax, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
-pums_all_fairfax <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
+write.csv(pums_all_fairfax_nolog, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax_nolog.csv")
+pums_all_fairfax <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax_nolog.csv")
 #View(pums_all_fairfax)
 #Making sure the pums_person file has the same number of columns
 pums_person_interest$ZCTAS <- NA
@@ -151,7 +155,9 @@ pums_combined$SEX <- as.factor(pums_combined$SEX)
 pums_combined$DREM <- as.factor(pums_combined$DREM)
 pums_combined$ENG <- as.factor(pums_combined$ENG)
 pums_combined$PAP <- as.factor(pums_combined$PAP)
-write.csv(pums_combined, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
+
+pums_combined_nolog <- pums_combined
+write.csv(pums_combined_nolog, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_combined_nolog.csv")
 unique(pums_combined$RAC1P)
 
 
@@ -160,7 +166,7 @@ unique(pums_combined$RAC1P)
 #maxit --: Number of iterations (Default is given as 5)
 #What is a good iterations number?
 #START FROM HERE!!!
-pums_combined <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_combined.csv")
+pums_combined <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_combined_nolog.csv")
 names(pums_combined)
 pums_combined <- pums_combined[-1]
 ncol(pums_combined)

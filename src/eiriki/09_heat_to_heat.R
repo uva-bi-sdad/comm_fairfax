@@ -242,3 +242,65 @@ both4 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students 
 #use this to save ggsave(both1, filename = "over_depress_with_bar.png",
 #path = "~/git/lab/comm_fairfax/data/comm_fairfax/working/Youth_Survey_Heat_Maps/with_bar_chart",
 # #device = "png", width=20,height=11.25,scale=1)
+
+#experimenting
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())+
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Depressive_Symptoms,sep=': ')
+    ), color = "black", size = 4, angle=35, vjust = -.15)
+
+plt2 <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Adults_Talk)), color = "black") +
+    scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 40,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())+
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Adults_Talk,sep=': ')
+    ), color = "black", size = 4, angle=35, vjust = -.15)
+both5 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students reporting Depressive Symptoms vs.
+                                                           Adults Talk', gp=gpar(fontsize=20)))
+
+#experimenting
+plt <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Depressive_Symptoms)), color = "black") +
+    scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())+
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Depressive_Symptoms,sep=': ')
+    ), color = "black", size = 4, angle=35, vjust = -.15)
+
+plt2 <-ggplot(highSchool) +
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+                                           fill = as.numeric(Gratitude)), color = "black") +
+    scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 91,
+                         guide = guide_colourbar(title = "Percent")) +
+    theme(axis.line=element_blank(),axis.text.x=element_blank(),
+          axis.text.y=element_blank(),axis.ticks=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),plot.background=element_blank())+
+    geom_text(data = centroids.df, aes(x = Longitude, y = Latitude, label = paste(id,Gratitude,sep=': ')
+    ), color = "black", size = 4, angle=35, vjust = -.15)
+both6 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students reporting Depressive Symptoms vs.
+                                                           Gratitude', gp=gpar(fontsize=20)))
