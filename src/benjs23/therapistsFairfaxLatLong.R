@@ -1,7 +1,12 @@
 library(ggmap)
 library(stringr)
 
+
 therapistAddress <- as.data.frame(read.csv("~/git/comm_fairfax/data/comm_fairfax/original/masterAddress.txt"))
+newrow <- as.data.frame(as.character("10379 Democracy Lane Fairfax Virginia 22030"))
+colnames(newrow) <- "X10379.B.Democracy.Lane.Fairfax.Virginia.22030"
+therapistAddress1 <- rbind(newrow, therapistAddress)
+
 LatLong<-vector()
 
 for(i in 1:1080)
@@ -11,8 +16,8 @@ for(i in 1:1080)
 }
 
 latLongPlotData <- data.frame(matrix(ncol=2,nrow=2))
-colnames(latLongPlotData) = c("latitude", "longitude")
-## @Eirik - should be able to put these snippets inside a for loop (i in 1:1080) with LatLong loaded in the environment
+colnames(latLongPlotData) = c("latitude", "longitude", "Address")
+View## @Eirik - should be able to put these snippets inside a for loop (i in 1:1080) with LatLong loaded in the environment
 for(j in 1:1080)
 {
 latLongPlotData[j, 1] <- as.numeric(strsplit(LatLong[j], " ")[[1]][1]) #returns the latitude of ith entry
@@ -22,9 +27,11 @@ latLongPlotData[j,2] <- as.numeric(strsplit(LatLong[j], " ")[[1]][2]) #returns t
 
 latLongPlotData$latitude <- as.numeric(latLongPlotData$latitude)
 latLongPlotData$longitude <- as.numeric(latLongPlotData$longitude)
+latLongPlotData <- cbind(latLongPlotData, therapistAddress1)
+save(latLongPlotData, file ="~/git/comm_fairfax/data/comm_fairfax/working/latLongTherapist.RData")
 
 
-
+LatLong1 <- paste(rev(as.character(geocode(as.character(therapistAddress1[1,1])))), collapse = ' ')
 
 sub <- apply(latLongPlotData,1,function(x){any( is.na(x))})
 latLongPlotData1 <- latLongPlotData[!sub,]
