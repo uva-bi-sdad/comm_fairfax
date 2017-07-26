@@ -84,6 +84,12 @@ acs_RAC1P2 <- data.frame(zipcode=acs_RAC1P$zipcode, 'white'=acs_RAC1P[,4],
                          'two_or_more'=acs_RAC1P[,10])
 # problem: there still a few zeroes
 # do some cheap 'zero inflation'
+acs_RAC1P2$white[ acs_RAC1P2$white < 100 ] <- 100
+acs_RAC1P2$black[ acs_RAC1P2$black < 100 ] <- 100
+acs_RAC1P2$asian[ acs_RAC1P2$asian < 100 ] <- 100
+acs_RAC1P2$other[ acs_RAC1P2$other < 100 ] <- 100
+acs_RAC1P2$two_or_more[ acs_RAC1P2$two_or_more < 100 ] <- 100
+
 acs_RAC1P3 <- acs_RAC1P2
 acs_RAC1P_prob <- acs_RAC1P3[2:ncol(acs_RAC1P3)]/rowSums(acs_RAC1P3[2:ncol(acs_RAC1P3)])
 acs_RAC1P_prob <- cbind(zipcode=acs_RAC1P$zipcode, acs_RAC1P_prob)
@@ -95,19 +101,28 @@ acs_SEX <- zip_matcher("B01001",zipdat$zip)
 # 1=male, 2=female
 acs_SEX2 <- data.frame(zipcode=acs_SEX$zipcode, male=acs_SEX$Sex.by.Age..Male.,
                        female=acs_SEX$Sex.by.Age..Female.)
+acs_SEX2$male[acs_SEX2$male < 100] <- 100
+acs_SEX2$male[acs_SEX2$female < 100] <- 100
 acs_SEX_prob <- acs_SEX2[2:ncol(acs_SEX2)]/rowSums(acs_SEX2[2:ncol(acs_SEX2)])
 acs_SEX_prob <- cbind(zipcode=acs_SEX$zipcode, acs_SEX_prob)
 # clean up
 rm(acs_SEX2)
 
 
+#Same table as sex
 acs_AGEP2 <- data.frame(zipcode=acs_SEX$zipcode,
                         age0_25=rowSums( acs_SEX[,c(4:11,28:35)]),
                         age25_50=rowSums( acs_SEX[,c(12:16,36:40)] ),
                         age50_75=rowSums( acs_SEX[,c(17:23,41:47)] ),
                         age75_up=rowSums( acs_SEX[,c(24:26,48:50)] ) )
+acs_AGEP2$age0_25[acs_AGEP2$age0_25 < 100] <- 100
+acs_AGEP2$age25_50[acs_AGEP2$age25_50 < 100] <- 100
+acs_AGEP2$age50_75[acs_AGEP2$age50_75 < 100] <- 100
+acs_AGEP2$age75_up[acs_AGEP2$age75_up < 100] <- 100
+
 acs_AGEP_prob <- acs_AGEP2[2:ncol(acs_AGEP2)]/rowSums(acs_AGEP2[2:ncol(acs_AGEP2)])
 acs_AGEP_prob <- cbind(zipcode=acs_AGEP2$zipcode, acs_AGEP_prob)
+
 # break age into categories: 0-25, 25-50, 50-75, 75+
 acs_AGE_breaks <- c(-Inf,25,50,75,Inf)
 # clean up
@@ -120,6 +135,10 @@ acs_DREM2 <- data.frame(zipcode=acs_DREM$zipcode,
                         cognitive_difficulty = rowSums( acs_DREM[,c(5,8,11,14,17,21,24,27,30,33)] ),
                         no_cognitive_diffiulty = rowSums( acs_DREM[,c(6,9,12,15,18,22,25,28,31,34)] ),
                         under_5 = rowSums( acs_SEX[,c(4,28)]) )
+acs_DREM2$cognitive_difficulty[acs_DREM2$cognitive_difficulty < 100] <- 100
+acs_DREM2$no_cognitive_diffiulty[acs_DREM2$no_cognitive_diffiulty < 100] <- 100
+acs_DREM2$under_5[acs_DREM2$under_5 < 100] <- 100
+
 acs_DREM_prob <- acs_DREM2[2:ncol(acs_DREM2)]/rowSums(acs_DREM2[2:ncol(acs_DREM2)])
 acs_DREM_prob <- cbind(zipcode=acs_DREM$zipcode, acs_DREM_prob)
 #View(acs_DREM_prob)
@@ -135,6 +154,10 @@ acs_PAP1 <- zip_matcher("B19057", zipdat$zip)
 acs_PAP2 <- data.frame(zipcode = acs_DREM$zipcode,
                        public_assistance = acs_PAP1[,c(3)],
                        nopublic_assistance = acs_PAP1[,c(4)])
+acs_PAP2$public_assistance[acs_PAP2$public_assistance < 100] <- 100
+acs_PAP2$nopublic_assistance[acs_PAP2$nopublic_assistance < 100] <- 100
+
+
 acs_PAP2_prob <- acs_PAP2[2:ncol(acs_PAP2)]/rowSums(acs_PAP2[2:ncol(acs_PAP2)])
 acs_PAP2_prob <- cbind(zipcode = acs_PAP2$zipcode, acs_PAP2_prob)
 #clean up
@@ -152,6 +175,16 @@ acs_PINCP2 <- data.frame(zipcode = acs_PINCP1$zipcode,
                          income_6 = acs_PINCP1[,c(10)],
                          income_7 = acs_PINCP1[,c(11)],
                          income_8 = acs_PINCP1[,c(12)])
+
+acs_PINCP2$income_1[acs_PINCP2$income_1 < 100] <- 100
+acs_PINCP2$income_2[acs_PINCP2$income_2 < 100] <- 100
+acs_PINCP2$income_3[acs_PINCP2$income_3 < 100] <- 100
+acs_PINCP2$income_4[acs_PINCP2$income_4 < 100] <- 100
+acs_PINCP2$income_5[acs_PINCP2$income_5 < 100] <- 100
+acs_PINCP2$income_6[acs_PINCP2$income_6 < 100] <- 100
+acs_PINCP2$income_7[acs_PINCP2$income_7 < 100] <- 100
+acs_PINCP2$income_8[acs_PINCP2$income_8 < 100] <- 100
+
 acs_PINCP2_prob <- acs_PINCP2[2:ncol(acs_PINCP2)]/rowSums(acs_PINCP2[2:ncol(acs_PINCP2)])
 acs_PINCP2_prob <- cbind(zipcode = acs_PINCP2$zipcode, acs_PINCP2_prob)
 #clean up
@@ -269,6 +302,9 @@ for(i in 1:length(imputed_draws)){
     if(i%%5==0){print(i)} # show progress
 }
 
+save(marginal_weights, file = "~/git/comm_fairfax/data/comm_fairfax/final/MWeight.Rdata")
+
+
 # are the sampling probabilities stable? bad if one number is much higher than the others
 sort(marginal_weights[1,],decreasing = T)
 hist(log(marginal_weights[1,]))
@@ -296,6 +332,8 @@ all_imputed_draws <- do.call(rbind,imputed_draws)
 # get first imputed sample (eventually want to loop over ind_draw[,i])
 ind_draw_all <- (ind_draw[,1]-1)*nperson + (1:nperson)
 imputed_draw_weighted <- all_imputed_draws[ind_draw_all,]
+
+save(imputed_draw_weighted, file = "~/git/comm_fairfax/data/comm_fairfax/final/imputed_draw_weight.Rdata")
 
 # clean up
 #rm(imputed_draws)
