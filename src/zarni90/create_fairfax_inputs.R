@@ -6,8 +6,7 @@ library(mi) # For imputation
 library(mice) #The imputation package
 
 #Loading the Personal PUMS for 2015
-PUMS_person <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/synthetic_population/pums_ffx.csv")
-nrow(PUMS_person)
+PUMS_person <- rio::import("~/git/comm_fairfax/data/comm_fairfax/final/pums_ffx.csv")
 names(PUMS_person)
 to_match_var <- names(PUMS_person)
 PUMS_person_interest <- c("PINCP", "DREM", "ENG", "PAP", "RAC1P", "SEX", "AGEP")
