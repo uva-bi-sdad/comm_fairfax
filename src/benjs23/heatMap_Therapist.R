@@ -1,5 +1,7 @@
-#this is the code for overlaying mental health providers by client focus onto the school pyramid boundary map filled by
+#This is the code for overlaying mental health providers by client focus onto the school pyramid boundary map filled by
 #percentage of students reporting depressive symptoms.
+#Also generates a bar plot count of public and private mental health providers by high school pyramid
+
 library(rgdal)
 library(maptools)
 library(ggplot2)
