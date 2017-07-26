@@ -1,26 +1,6 @@
 # do 'easy' imputation
 library(dplyr)
 
-setwd("~git/comm_fairfax/src/joshg22/")
-
-synth_fairfax <- read.csv("~sdal/projects/comm_fairfax/final/fairfax_latlong.csv")[,-1]
-
-pums_orig <- read.csv("~sdal/projects/comm_fairfax/final/pums_ffx.csv")
-pums_orig <- pums_orig %>% dplyr::select(SERIALNO,PUMA,PWGTP,PINCP,DREM,ENG,PAP,RAC1P,SEX,AGEP)
-
-pums_orig$DREM[is.na(pums_orig$DREM)] <- 3 # set 'under 5' to 3
-
-numdraws <- 100
-
-# for each draw, resample rows from pums_orig into synth_fairfax
-# sample with weights given by PWGTP (person weights in PUMS)
-
-imputed_draws <- list()
-for(i in 1:numdraws){
-    imputed_draws[[i]] <- synth_fairfax
-    imputed_draws[[i]][,1:7] <- pums_orig[sample(1:nrow(pums_orig),size=nrow(synth_fairfax),replace = TRUE,prob=pums_orig$PWGTP),4:10]
-}
-
 # ------------------------------------------------------------
 # read in marginal tables by ZCTA
 
@@ -38,9 +18,18 @@ library(maptools)
 library(dplyr)
 library(tigris)
 library(sp)
+library(mice)
 
 #load in API key
 api.key.install("a6f5f5a822ad65a230b64f035337bb393b404bb7")
+
+
+#Loading the imputed data set
+load("~/git/comm_fairfax/data/comm_fairfax/final/miceoutput_factor.Rdata")
+fairfax_all_latlong <- rio::import("~/git/comm_fairfax/data/comm_fairfax/final/fairfax_latlong.csv")
+pums_person_interest <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest_factors.csv")
+
+#Add loading pums person interest
 
 #to call in tables
 zip_matcher <- function(tablecode, ziplist){
@@ -70,7 +59,7 @@ zip_matcher <- function(tablecode, ziplist){
 }
 
 # get Fairfax county ZCTAs, store in 'ziplist'
-zipdat <- as.data.frame(table(synth_fairfax$ZCTAS))
+zipdat <- as.data.frame(table(fairfax_all_latlong$ZCTAS))
 names(zipdat) <- c("zip","n")
 
 # ------------------------------------------------------------
@@ -96,7 +85,6 @@ acs_RAC1P2 <- data.frame(zipcode=acs_RAC1P$zipcode, 'white'=acs_RAC1P[,4],
 # problem: there still a few zeroes
 # do some cheap 'zero inflation'
 acs_RAC1P3 <- acs_RAC1P2
-acs_RAC1P3[ acs_RAC1P3 < 100 ] <- 100
 acs_RAC1P_prob <- acs_RAC1P3[2:ncol(acs_RAC1P3)]/rowSums(acs_RAC1P3[2:ncol(acs_RAC1P3)])
 acs_RAC1P_prob <- cbind(zipcode=acs_RAC1P$zipcode, acs_RAC1P_prob)
 # clean up
@@ -134,10 +122,40 @@ acs_DREM2 <- data.frame(zipcode=acs_DREM$zipcode,
                         under_5 = rowSums( acs_SEX[,c(4,28)]) )
 acs_DREM_prob <- acs_DREM2[2:ncol(acs_DREM2)]/rowSums(acs_DREM2[2:ncol(acs_DREM2)])
 acs_DREM_prob <- cbind(zipcode=acs_DREM$zipcode, acs_DREM_prob)
+#View(acs_DREM_prob)
 # clean up
 rm(acs_DREM2)
 
-# match on these four for now; but we could also add PAP, PINCP
+#ENGLISH! #DROP THIS FOR NOW
+#This is too tedious to match it back to the ACS table
+#PAP
+
+acs_PAP1 <- zip_matcher("B19057", zipdat$zip)
+#Should I include an option for under 5?
+acs_PAP2 <- data.frame(zipcode = acs_DREM$zipcode,
+                       public_assistance = acs_PAP1[,c(3)],
+                       nopublic_assistance = acs_PAP1[,c(4)])
+acs_PAP2_prob <- acs_PAP2[2:ncol(acs_PAP2)]/rowSums(acs_PAP2[2:ncol(acs_PAP2)])
+acs_PAP2_prob <- cbind(zipcode = acs_PAP2$zipcode, acs_PAP2_prob)
+#clean up
+rm(acs_PAP2)
+
+#PINCP
+acs_PINCP1 <- zip_matcher("B06010", zipdat$zip)
+#View(acs_PINCP1)
+acs_PINCP2 <- data.frame(zipcode = acs_PINCP1$zipcode,
+                         income_1 = rowSums(acs_PINCP1[,c(3,5)]), #0 and 1-9999 #Row Sums
+                         income_2 = acs_PINCP1[,c(6)],
+                         income_3 = acs_PINCP1[,c(7)],
+                         income_4 = acs_PINCP1[,c(8)],
+                         income_5 = acs_PINCP1[,c(9)],
+                         income_6 = acs_PINCP1[,c(10)],
+                         income_7 = acs_PINCP1[,c(11)],
+                         income_8 = acs_PINCP1[,c(12)])
+acs_PINCP2_prob <- acs_PINCP2[2:ncol(acs_PINCP2)]/rowSums(acs_PINCP2[2:ncol(acs_PINCP2)])
+acs_PINCP2_prob <- cbind(zipcode = acs_PINCP2$zipcode, acs_PINCP2_prob)
+#clean up
+rm(acs_PINCP2)
 
 # -----------------------------------------------------------------------
 # draw imputed samples from the marginal distribution (independantly for each person)
@@ -145,13 +163,68 @@ rm(acs_DREM2)
 # -----------------------------------------------------------------------
 
 # reweight probabilities according to frequency in the imputed sample
-drem_prob <- table(imputed_draws[[1]]$DREM)/nrow(imputed_draws[[1]])
+# why are we doing the frequency here now?
+
+
+test <-complete(mice.out, 1)
+imputed_draws <- list()
+for(i in 1:5) {
+    imputed_draws[[i]] <- complete(mice.out,i)[12607:nrow(test),]
+    imputed_draws[[i]] <- cbind(imputed_draws[[i]],fairfax_all_latlong[,c(9:12)])
+}
+
+#Drawing from PUMS_person_interest to reweight it by ACS
+
+#DREM
+drem_prob <- table(pums_person_interest$DREM)/nrow(pums_person_interest)
 acs_DREM_prob_weighted <- acs_DREM_prob
 acs_DREM_prob_weighted[,2] <- acs_DREM_prob[,2]/drem_prob[1]
 acs_DREM_prob_weighted[,3] <- acs_DREM_prob[,3]/drem_prob[2]
 acs_DREM_prob_weighted[,4] <- acs_DREM_prob[,4]/drem_prob[3]
 
-# TO DO: create reweighted probabilities for the rest of the variables!
+
+# RACE!
+race_prob <- table(pums_person_interest$RAC1P)/nrow(pums_person_interest)
+acs_RAC1P_prob_weighted <- acs_RAC1P_prob
+acs_RAC1P_prob_weighted[,2] <- acs_RAC1P_prob[,2]/race_prob[1]
+acs_RAC1P_prob_weighted[,3] <- acs_RAC1P_prob[,3]/race_prob[2]
+acs_RAC1P_prob_weighted[,4] <- acs_RAC1P_prob[,4]/race_prob[3]
+acs_RAC1P_prob_weighted[,5] <- acs_RAC1P_prob[,5]/race_prob[4]
+acs_RAC1P_prob_weighted[,6] <- acs_RAC1P_prob[,6]/race_prob[5]
+
+# SEX
+sex_prob <- table(pums_person_interest$SEX)/nrow(pums_person_interest)
+acs_SEX_prob_weighted <- acs_SEX_prob
+acs_SEX_prob_weighted[,2] <- acs_SEX_prob[,2]/sex_prob[1]
+acs_SEX_prob_weighted[,3] <- acs_SEX_prob[,3]/sex_prob[2]
+
+#AGE
+age_prob <- table(pums_person_interest$AGEP)/nrow(pums_person_interest)
+acs_AGEP_prob_weighted <- acs_AGEP_prob
+acs_AGEP_prob_weighted[,2] <- acs_AGEP_prob[,2]/age_prob[1]
+acs_AGEP_prob_weighted[,3] <- acs_AGEP_prob[,3]/age_prob[2]
+acs_AGEP_prob_weighted[,4] <- acs_AGEP_prob[,4]/age_prob[3]
+acs_AGEP_prob_weighted[,5] <- acs_AGEP_prob[,5]/age_prob[4]
+
+#PINCP
+pincp_prob <- table(pums_person_interest$PINCP)/nrow(pums_person_interest)
+acs_PINCP2_prob_weighted <- acs_PINCP2_prob
+acs_PINCP2_prob_weighted[,2] <- acs_PINCP2_prob[,2]/pincp_prob[1]
+acs_PINCP2_prob_weighted[,3] <- acs_PINCP2_prob[,3]/pincp_prob[2]
+acs_PINCP2_prob_weighted[,4] <- acs_PINCP2_prob[,4]/pincp_prob[3]
+acs_PINCP2_prob_weighted[,5] <- acs_PINCP2_prob[,5]/pincp_prob[4]
+acs_PINCP2_prob_weighted[,6] <- acs_PINCP2_prob[,6]/pincp_prob[5]
+acs_PINCP2_prob_weighted[,7] <- acs_PINCP2_prob[,7]/pincp_prob[6]
+acs_PINCP2_prob_weighted[,8] <- acs_PINCP2_prob[,8]/pincp_prob[7]
+acs_PINCP2_prob_weighted[,9] <- acs_PINCP2_prob[,9]/pincp_prob[8]
+
+#PAP
+pap_prob <- table(pums_person_interest$PAP)/nrow(pums_person_interest)
+acs_PAP2_prob_weighted <- acs_PAP2_prob
+acs_PAP2_prob_weighted[,2] <- acs_PAP2_prob[,2]/sex_prob[1]
+acs_PAP2_prob_weighted[,3] <- acs_PAP2_prob[,3]/sex_prob[2]
+
+
 
 marginal_weights <- matrix(NA,nrow=nrow(imputed_draws[[1]]),ncol=length(imputed_draws))
 
@@ -159,29 +232,39 @@ acs_marginal <- function(zip_codes, values, acs_prob, value_to_column) {
     rownum <- match(zip_codes,acs_prob$zipcode)
     colnum <- value_to_column[values]
     weights <- rep(NA,length(rownum))
-    for(i in 1:length(rownum)){ weights[i] <- acs_prob[rownum[i],colnum[i]] }
+    #browser()
+    for(i in 1:length(rownum)){ weights[i] <- acs_prob[rownum[i],colnum[i]]
+        #print(i)
+        #print(unique(values))
+
+    }
     return(weights)
 }
+
 
 # for now, just weight on DREM to make the plot
 for(i in 1:length(imputed_draws)){
     # set 'NA' in DREM to 3
-    imputed_draws[[i]]$DREM[is.na(imputed_draws[[i]]$DREM)] <- 3
+    #imputed_draws[[i]]$DREM[is.na(imputed_draws[[i]]$DREM)] <- 3
     # bin age according to breaks
-    imputed_draws[[i]]$AGE_F <- as.numeric( cut(imputed_draws[[i]]$AGEP,breaks=acs_AGE_breaks) )
+        #imputed_draws[[i]]$AGE_F <- as.numeric( cut(imputed_draws[[i]]$AGEP,breaks=acs_AGE_breaks) )
     # weights are a product of the marginal distributions
-    marginal_weights[,i] <- acs_marginal(imputed_draws[[i]]$ZCTAS,imputed_draws[[i]]$DREM,
-                                         acs_DREM_prob_weighted,value_to_column <- 2:4)
+        #marginal_weights[,i] <- acs_marginal(imputed_draws[[i]]$ZCTAS,imputed_draws[[i]]$DREM,
+                                             #acs_DREM_prob_weighted,value_to_column <- 2:4)
     # original code, product of four marginals:
-    #marginal_weights[,i] <-
-    #  acs_marginal(imputed_draws[[i]]$ZCTAS,imputed_draws[[i]]$RAC1P,
-    #               acs_RAC1P_prob_weighted,value_to_column <- c(2,3,5,5,5,4,5,5,6)) *
-    #  acs_marginal(imputed_draws[[i]]$ZCTAS,imputed_draws[[i]]$DREM,
-    #               acs_DREM_prob_weighted,value_to_column <- 2:4) *
-    #  acs_marginal(imputed_draws[[i]]$ZCTAS,imputed_draws[[i]]$SEX,
-    #               acs_SEX_prob_weighted,value_to_column <- 2:3) *
-    #  acs_marginal(imputed_draws[[i]]$ZCTAS,imputed_draws[[i]]$AGE_F,
-    #               acs_AGEP_prob_weighted,value_to_column <- 2:5)
+    marginal_weights[,i] <-
+     acs_marginal(imputed_draws[[i]]$ZCTAS,imputed_draws[[i]]$RAC1P,
+                   acs_RAC1P_prob_weighted,value_to_column <- c(2,3,5,5,5,4,5,5,6)) *  #You all these value to columns and colums corresponding to Imputation (then, we are matching it to ACS): Length of the c(...) is length of imputation factor!
+      acs_marginal(imputed_draws[[i]]$ZCTAS,imputed_draws[[i]]$DREM,
+                   acs_DREM_prob_weighted,value_to_column <- 2:4) *
+      acs_marginal(imputed_draws[[i]]$ZCTAS,imputed_draws[[i]]$SEX,
+                    acs_SEX_prob_weighted,value_to_column <- 2:3) *
+      acs_marginal(imputed_draws[[i]]$ZCTAS,imputed_draws[[i]]$AGEP,
+                      acs_AGEP_prob_weighted,value_to_column <- 2:5) *
+      acs_marginal(imputed_draws[[i]]$ZCTAS, imputed_draws[[i]]$PAP,
+                    acs_PAP2_prob_weighted, value_to_column <- 2:3) *
+      acs_marginal(imputed_draws[[i]]$ZCTAS, imputed_draws[[i]]$PINCP,
+                    acs_PINCP2_prob_weighted, value_to_column <- 2:9)
     #marginal_samp_prob[,i] <- marginal_weights[,i]/sum(marginal_weights[,i])
     if(i%%5==0){print(i)} # show progress
 }
@@ -194,14 +277,16 @@ hist(log(marginal_weights[1,]))
 
 # draw samples from the weighted marginal distribution
 ndraws <- 1
-
-imputed_draws_weighted <- list()
-for(i in 1:ndraws){
-    imputed_draws_weighted[[i]] <- imputed_draws[[1]]
-}
+numdraws <- 5
+# imputed_draws_weighted <- list()
+# for(i in 1:ndraws){
+#     imputed_draws_weighted[[i]] <- imputed_draws[[i]]
+# }
 
 # problem: this runs very slowly; speed it up
-ind_draw <- matrix(nrow=nrow(imputed_draws[[1]]), ncol=ndraws)
+ind_draw <- matrix(nrow=nrow(imputed_draws[[1]]), ncol=length(imputed_draws[[1]]))
+
+#Fixing code here
 for(i in 1:nrow(imputed_draws[[1]])){
     ind_draw[i,] <- sample(size=ndraws, x=1:numdraws, prob=marginal_weights[i,], replace=TRUE)
 }

@@ -21,5 +21,5 @@ niter <- 5
 mice.out <- mice(data=pums_combined%>% dplyr::select(RAC1P,SEX,AGEP,DREM,PINCP, PAP, ENG), m=numdraws,maxit = niter,
                  method=c("polyreg","logreg","polyreg","polyreg","polyreg", "logreg", "polyreg"), seed = 1234)
 
-setwd("~/git/comm_fairfax/data/comm_fairfax/working/")
+setwd("~/git/comm_fairfax/data/comm_fairfax/final/")
 save(mice.out, file = "miceoutput_factor.Rdata")
