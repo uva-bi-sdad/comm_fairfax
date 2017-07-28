@@ -92,7 +92,6 @@ HS_Pyramid_Report1_mh_8th_grade <- subset(HS_Pyramid_Report1_mh, Demographic == 
 highSchool_percent_count <- HS_Pyramid_Report1_mh_overall %>% left_join(highSchool@data, by = c("Pyramid" = "SCHOOL_NAM"))
 highSchool_percent_count8 <- HS_Pyramid_Report1_mh_8th_grade %>% left_join(highSchool@data, by = c("Pyramid" = "SCHOOL_NAM"))
 
-#~~~~~~~~~Based on Bianica's Code
 #Based on Bianica's Code
 names(highSchool@data)
 highSchool@data$id <- rownames(highSchool@data)
