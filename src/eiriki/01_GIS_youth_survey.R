@@ -16,6 +16,7 @@ library(data.table)
 library(RColorBrewer)
 library(sp)
 library(readxl)
+library(rio)
 
 #~~~~~~~~~~~start copying the geographic code from zarni for GIS
 mgmap <- get_map(location=c(-77.7173, 38.5976, -76.8686, 39.0682), source = "google", color = "bw")
@@ -201,7 +202,7 @@ long_lat_mhp_frame <- SpatialPointsDataFrame(cbind(lon = as.numeric(mhp_clean$lo
 proj4string(long_lat_mhp_frame) <- proj4string(highSchool)
 crs.geo <- CRS("+init=epsg:4326")
 proj4string(long_lat_mhp) <- crs.geo
-load("./data/comm_fairfax/working/latLongTherapistPlotData.RData")
+load("~/git/comm_fairfax/data/comm_fairfax/working/latLongTherapistPlotData.RData")
 
 
 

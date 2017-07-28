@@ -16,10 +16,10 @@ pums_combined$PINCP <- as.factor(pums_combined$PINCP)
 pums_combined$AGEP <- as.factor(pums_combined$AGEP)
 
 
-numdraws <- 5
-niter <- 5
+numdraws <- 100
+niter <- 10
 mice.out <- mice(data=pums_combined%>% dplyr::select(RAC1P,SEX,AGEP,DREM,PINCP, PAP, ENG), m=numdraws,maxit = niter,
                  method=c("polyreg","logreg","polyreg","polyreg","polyreg", "logreg", "polyreg"), seed = 1234)
 
-setwd("~/git/comm_fairfax/data/comm_fairfax/final/")
+setwd("~/git/comm_fairfax/data/comm_fairfax/working/")
 save(mice.out, file = "miceoutput_factor.Rdata")

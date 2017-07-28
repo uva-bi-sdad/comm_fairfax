@@ -94,7 +94,7 @@ Regions[,5:28] <- Regions[,5:28] *100
 Regions[,5:28] <- round(Regions[,5:28], digits = 2)
 ###########   start making the bar charts
 #making title string to help identify region, add '\n' to specify a newline
-s1 <- 'Herndon, Langley, Madison, \n Oakton'
+s1 <- 'Herndon, Langley, Madison, \n Oakton, South Lakes'
 s2 <-'Annandale, Falls Church, Mclean,\n Marshall, Stuart, Thomas Jefferson'
 s3 <-'Edison, Hayfield, Lee, \n Mount Vernon, West Potomac'
 s4 <-'Centreville, Lake Braddock, Robinson, \n South County, West Springfield'
@@ -107,8 +107,9 @@ bchart <- ggplot(Regions, aes(x = reorder(Pyramid, -as.numeric(Depressive_Sympto
     ggtitle("Average Percent of Students Reporting Depressive Symptoms in each Region")+
     labs(x= 'Region') +
     theme_bw()+
-    theme(axis.text.x=element_text(size = 15), axis.text.y = element_text(size = 15)) +
-    geom_text(aes(label=c(s1,s2,s3,s4,s5)), position=position_dodge(width=0.4), vjust=-0.25, size = 5) +
+    theme(axis.text.x=element_text(size=30), axis.text.y = element_text(size = 30),
+          axis.title.x = element_text(size = 30),axis.title.y = element_text(size = 30)) +
+    geom_text(aes(label=c(s1,s2,s3,s4,s5)), position=position_dodge(width=0.4), vjust=-0.25, size = 6) +
     scale_y_continuous(name="Percent", breaks = seq(24,29,1),limits=c(24, 29),oob = rescale_none) +
     theme(plot.title = element_text(size = 20, face = 'bold'))
 plot(bchart)
