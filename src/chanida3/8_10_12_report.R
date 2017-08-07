@@ -1,3 +1,7 @@
+#Heat Maps on different varaibles from Fairfax Youth Survey for overall and 8th graders.
+
+
+#loading libraries
 library(rgdal)
 library(maptools)
 library(ggplot2)
@@ -122,6 +126,7 @@ mhp_per_sch <- sch_with_mhp[,.N,OBJECTID]
 mhp_per_sch <- mhp_per_sch %>% left_join(highSchool@data, by = c("OBJECTID", "OBJECTID"))
 
 #JEFFERSON HIGH SCHOOL IS IN THE LOW TRIANGLE
+
 ##################FOR THE OVERALL ROW
 #HEAT MAP for % of Students reporting Depressive Symptoms
 plt <-ggplot(highSchool) +
