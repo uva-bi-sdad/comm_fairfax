@@ -157,36 +157,22 @@ write.csv(pums_person_interest, file = "~/git/comm_fairfax/data/comm_fairfax/wor
 
 #Now, we need to combine it with the rest of empty over 1 million rows and run the initial plots.
 
+#Pulling in LatLong included empty data frame to fit.
+fairfax_all_latlong <- rio::import("~/git/comm_fairfax/data/comm_fairfax/final/fairfax_latlong.csv")
+names(fairfax_all_latlong)
+fairfax_all_latlong <- fairfax_all_latlong[-1]
+#Pulling in pums_person_interest_factors
+pums_person_interest <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_person_interest_factors.csv")
 
-#Creating the empty data frame for all the missing people
-pums_all_fairfax <- data.frame(matrix(NA, ncol = 7, nrow = 1081726))
-#Appending column names to it
-names(pums_all_fairfax) <- names(pums_person_interest)
-#Number of columns
-ncol(pums_all_fairfax)
-#Number of pums_person_column
-ncol(pums_person_interest)
-#Adding zip codes by the number of its population
-#Removing the first column of the ZCTA by population thing
-fairfax_pop <- fairfax_pop[-1]
-#Repeating the numbers of ZCTAs by population
-zip_vectir <- rep(fairfax_pop$ZCTA5, times = fairfax_pop$POPPT)
-pums_all_fairfax$ZCTAS <- zip_vectir
-#Adding ZCTAs to Fairfax data frame
 
-#Write this out for JOSH
-write.csv(pums_all_fairfax, file = "~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
-pums_all_fairfax <- rio::import("~/git/comm_fairfax/data/comm_fairfax/working/pums_all_fairfax.csv")
-#View(pums_all_fairfax)
-#Making sure the pums_person file has the same number of columns
 pums_person_interest$ZCTAS <- NA
-ncol(pums_person_interest)
+pums_person_interest$long <- NA
+pums_person_interest$lat <- NA
+pums_person_interest$HighSchool <- NA
+pums_person_interest <- pums_person_interest[-1]
 names(pums_person_interest)
-ncol(pums_all_fairfax)
-pums_all_fairfax <- pums_all_fairfax[-1]
-names(pums_all_fairfax)
 
-pums_combined <- rbind(pums_person_interest, pums_all_fairfax)
+pums_combined <- rbind(pums_person_interest, fairfax_all_latlong)
 names(pums_combined)
 
 
@@ -206,7 +192,9 @@ write.csv(pums_combined, file = "~/git/comm_fairfax/data/comm_fairfax/working/pu
 unique(pums_combined$RAC1P)
 
 
-
+####################
+#REFER TO SCRIPT UNDER FOLDER: /home/zarni90/git/comm_fairfax
+####################
 #Put Seed in
 #maxit --: Number of iterations (Default is given as 5)
 #What is a good iterations number?

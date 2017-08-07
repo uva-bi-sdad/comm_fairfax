@@ -188,21 +188,6 @@ acs_DREM_prob <- cbind(zipcode=acs_DREM$zipcode, acs_DREM_prob)
 
 # match on these four for now; hold off on ENG, PAP, PINCP
 
-#ENGLISH! #DROP THIS FOR NOW
-#Questions for Josh: regarding categorizing them
-acs_ENG1 <- zip_matcher("B16001", zipdat$zip)
-acs_ENG1
-#very well indexes : 3, 5, 8, 11, ... 238
-#less than well indexes : 6, 9, 12,... 239
-#QUERY on how to fix the indexes here!
-acs_ENG2 <- data.frame(zipcode = acs_ENG1$zipcode,
-                       very_well = acs_ENG1[,c()],
-                       not_well = acs_ENG1[,c()])
-acs_ENG2_prob <- acs_ENG2[2:ncol(acs_ENG2)]/rowSums(acs_ENG2[2:ncol(acs_ENG2)])
-
-
-View(acs_ENG1)
-names(acs_ENG1)
 
 #PAP
 acs_PAP1 <- zip_matcher("B19057", zipdat$zip)

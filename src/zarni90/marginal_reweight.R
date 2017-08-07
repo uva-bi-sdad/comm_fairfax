@@ -250,7 +250,6 @@ test <- acs_marginal(imp_draws[[1]]$zipcode,imp_draws[[1]]$RAC1P,
              acs_RAC1P_prob,value_to_column <- c(2,3,5,5,5,4,5,5,6))
 
 
-
 for(i in 1:length(imp_draws)){
     # bin age according to breaks
     imp_draws[[i]]$AGE_F <- as.numeric( cut(imp_draws[[i]]$AGEP,breaks=acs_AGE_breaks) )
