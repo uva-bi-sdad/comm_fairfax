@@ -1,4 +1,4 @@
-actSum = read.csv("./git/comm_fairfax/data/comm_fairfax/working/ATUS_data_working/ATUSsummaryAgeState.csv")
+actSum = read.csv("./data/comm_fairfax/working/ATUS_data_working/ATUSsummaryAgeState.csv")
 
 ####################
 # Make some maps with ggplot2. You can ignore this for now. I need to flesh out this section
@@ -11,5 +11,5 @@ statemapdata = map_data("state")
 statemapdata = merge(statemapdata, sleepperstate, by.x = "region", by.y = "state")
 dim(statemapdata)
 
-ggplot() + geom_polygon(data = statemapdata, aes(x=long, y = lat, group = group, fill = avgsleep/60)) + 
+ggplot() + geom_polygon(data = statemapdata, aes(x=long, y = lat, group = group, fill = avgsleep/60)) +
   coord_fixed(1.3)

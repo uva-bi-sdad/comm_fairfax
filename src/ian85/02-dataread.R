@@ -3,10 +3,10 @@ library(ggplot2)
 
 # This file is the summary file from the ATUS data with each respondent's state included, as well as a grouping variable for their age. Note that I've removed hawaii and alaska since the maping software I'm using doesn't have shapefiles for them, not for any good reason.
 
-actSum = read.csv("./git/comm_fairfax/data/comm_fairfax/working/ATUS_data_working/ATUSsummaryAgeState.csv")
+actSum = read.csv("./data/comm_fairfax/working/ATUS_data_working/ATUSsummaryAgeState.csv")
 
 ####################
-# Here are some examples of how to produce summaries. 
+# Here are some examples of how to produce summaries.
 ####################
 
 # The basic summary function is table
