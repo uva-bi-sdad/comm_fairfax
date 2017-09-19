@@ -20,3 +20,22 @@ religious <- actSum[, (360:365)]
 volunteer <- actSum[, (366:389)]
 telephone <- actSum[, (390:398)]
 travel <- actSum[, (399:451)]
+
+
+one <- data.frame(colSums(personal_care, dims = 1))
+two <- data.frame(colSums(household_act, dims = 1))
+three <- data.frame(colSums(helping_HH_mem, dims = 1))
+four <- data.frame(colSums(helping_nHH_mem, dims = 1))
+five <- data.frame(colSums(work_act, dims = 1))
+six <- data.frame(colSums(education, dims = 1))
+seven <- data.frame(colSums(consum_purc, dims = 1))
+eight <- data.frame(colSums(prof_pers_care, dims = 1))
+nine <- data.frame(colSums(house_serv, dims = 1))
+ten <- data.frame(colSums(civic_obli, dims = 1))
+eleven <- data.frame(colSums(eat_drink, dims = 1))
+twelve <- data.frame(colSums(social_relax, dims = 1))
+thirteen <- data.frame(colSums(sports_rec, dims = 1))
+fourteen <- data.frame(colSums(religious, dims = 1))
+fifteen <- data.frame(colSums(volunteer, dims = 1))
+sixteen <- data.frame(colSums(telephone, dims = 1))
+seventeen <- data.frame(colSums(travel, dims = 1))
