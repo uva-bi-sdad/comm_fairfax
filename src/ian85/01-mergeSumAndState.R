@@ -4,8 +4,9 @@
 ####################
 
 # Load in data
-CPS = read.csv("./git/comm_fairfax/data/comm_fairfax/original/ATUS_Data/atuscps_0316.dat")
-timeSum = read.csv("./git/comm_fairfax/data/comm_fairfax/original/ATUS_Data/atussum_0316.dat", header = T, stringsAsFactors = F)
+CPS = read.csv("./data/comm_fairfax/original/ATUS_Data/atuscps_0316.dat")
+timeSum = read.csv("./data/comm_fairfax/original/ATUS_Data/atussum_0316.dat", header = T, stringsAsFactors = F)
+statefips = read.csv("./data/comm_fairfax/original/ATUS_Data/statefips.csv", header = T, stringsAsFactors = F)
 
 #Add age group to timeSum
 timeSum$agegrp = ifelse(timeSum$TEAGE <= 19, 1, ifelse(timeSum$TEAGE <= 64, 2, 3))
@@ -24,4 +25,3 @@ casestatesum = merge(casestate, timeSum)
 
 write.csv(casestatesum, "./git/comm_fairfax/data/comm_fairfax/working/ATUS_data_working/ATUSsummaryAgeState.csv")
 
-rm(CPS, timeSum, casestatesum)
