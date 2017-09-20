@@ -39,3 +39,10 @@ fourteen <- data.frame(colSums(religious, dims = 1))
 fifteen <- data.frame(colSums(volunteer, dims = 1))
 sixteen <- data.frame(colSums(telephone, dims = 1))
 seventeen <- data.frame(colSums(travel, dims = 1))
+
+# This will do a cross tabulation for their major categories by state and by age group.
+
+personal_care_state_age = tapply(rowSums(personal_care), list(actSum$state, actSum$agegrp), mean)
+
+household_act_state_age = tapply(rowSums(household_act), list(actSum$state, actSum$agegrp), mean)
+

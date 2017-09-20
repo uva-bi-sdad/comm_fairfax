@@ -25,3 +25,4 @@ casestatesum = merge(casestate, timeSum)
 
 write.csv(casestatesum, "./git/comm_fairfax/data/comm_fairfax/working/ATUS_data_working/ATUSsummaryAgeState.csv")
 
+rm(CPS, timeSum, casestatesum)

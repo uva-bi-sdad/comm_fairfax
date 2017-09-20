@@ -28,6 +28,8 @@ names(acs.clean) = c("GEOID", "Total Pop", "Male Pop", "Female Pop")
 
 acs.merge = geo_join(tracts, acs.clean, "GEOID", "GEOID")
 
+# There's a percent column which I think is what's providing the data.
+income_df$percent <- 100*(income_df$over_200/income_df$total)
 # Make a happy little map
 
 popup <- paste0("GEOID: ", income_merged$GEOID, "<br>", "Percent of Households above $200k: ", round(income_merged$percent,2))
