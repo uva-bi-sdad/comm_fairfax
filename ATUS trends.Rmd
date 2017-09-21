@@ -1,0 +1,30 @@
+---
+title: "ATUS Trends"
+author: "Ian Crandell"
+date: "9/21/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+library(ggplot2)
+```
+
+The first breakdown I did was on simple averages. These following plots show the average minutes spent per year for each major ATUS category split across age groups. 
+
+```{r trends}
+  trend.data = read.csv("./data/comm_fairfax/working/ATUS trend summary data.csv")
+  cat.names = unique(trend.data$ATUScat)
+  for(i in 1:length(cat.names)){
+    
+    active.data = subset(trend.data, ATUScat == cat.names[i])
+    
+    plot = ggplot(data = active.data, aes(x = year, y = value, color = as.factor(agegrp))) +
+      geom_line() + geom_point() +
+      labs(y = "Minutes Per Day", title = paste("ATUS Category:", cat.names[i]), color = "Age Group") +
+      scale_color_manual(labels = c("15-19", "20-64", "65+"), values = rainbow(3))
+    plot(plot)
+  }
+```
+
+Craig noticed that the time spent on one's primary job was unusually low, averaging around 3 hours per day. This is caused by a large number of 0's in the data. The next series of plots shows the proportion of zero entries for each category and the average values among non zero values.

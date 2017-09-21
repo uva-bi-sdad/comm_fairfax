@@ -62,7 +62,10 @@ exercise.cols = c("t030105", "t040105", "t050203", "t150301", grep("1301", colna
 exercise.cols = exercise.cols[-c(9, 16, 18, 22, 38, 42)]
 
 exercise.sum = rowSums(actSum[exercise.cols])
-atus.data.state(exercise.sum, mean, "Total Exercise")
 
+atus.data.state(exercise.sum, mean, "Total Exercise")
+pdf(paste0(map.out.dir, "composite exercise", ".pdf"))
+plot(atus.data.state(exercise.sum, mean, "Total Exercise"))
+dev.off()
 
 

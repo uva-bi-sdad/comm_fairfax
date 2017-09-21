@@ -38,12 +38,35 @@ thirteen <- data.frame(colSums(sports_rec, dims = 1))
 fourteen <- data.frame(colSums(religious, dims = 1))
 fifteen <- data.frame(colSums(volunteer, dims = 1))
 sixteen <- data.frame(colSums(telephone, dims = 1))
-seventeen <- data.frame(colSums(travel, dims = 1))
+eighteen <- data.frame(colSums(travel, dims = 1))
 
 # This will do a cross tabulation for their major categories by state and by age group.
 
-personal_care_state_age = tapply(rowSums(personal_care), list(actSum$state, actSum$agegrp), mean)
+personal_care_state_age = data.frame(tapply(rowSums(personal_care), list(actSum$state, actSum$agegrp), mean))
+colMeans(personal_care_state_age)
 
-household_act_state_age = tapply(rowSums(household_act), list(actSum$state, actSum$agegrp), mean)
+household_act_state_age = data.frame(tapply(rowSums(household_act), list(actSum$state, actSum$agegrp), mean))
+colMeans(household_act_state_age)
 
+<<<<<<< HEAD
 work_act_state_age <- tapply(rowSums(work_act), list(actSum$state, actSum$agegrp), mean)
+=======
+work_act_state_age <- data.frame(tapply(rowSums(work_act), list(actSum$state, actSum$agegrp), mean))
+colMeans(work_act_state_age)
+
+social_relax_state_age <- data.frame(tapply(rowSums(social_relax), list(actSum$state, actSum$agegrp), mean))
+colMeans(social_relax_state_age)
+
+eat_drink_state_age <- data.frame(tapply(rowSums(eat_drink), list(actSum$state, actSum$agegrp), mean))
+colMeans(eat_drink_state_age)
+
+
+work0501 <- data.frame(work_act[, 1])
+work_act_state_age <- data.frame(tapply(rowSums(work0501), list(actSum$state, actSum$agegrp), mean))
+colMeans(work_act_state_age)
+
+
+sleep101 <- data.frame(personal_care[, 1])
+sleep101_state_age <- data.frame(tapply(rowSums(sleep101), list(actSum$state, actSum$agegrp), mean))
+colMeans(sleep101_state_age)
+>>>>>>> 8346ea5f24121da574fade3fcd0751c88d92256d
