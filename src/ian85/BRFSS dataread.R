@@ -2,21 +2,37 @@ library(foreign)
 library(maps)
 library(ggplot2)
 options(stringsAsFactors = FALSE)
-brfss <- read.xport("./data/comm_fairfax/original/LLCP2016.xpt")
-statefips = read.csv("./data/comm_fairfax/original/ATUS_Data/statefips.csv", header = T, stringsAsFactors = F)
 
+years = 2003:2016
+lead0 = c(paste0("0", 3:9), 10)
+file.part1 = paste0(2003:2010, "/files/", "CDBRFS", lead0, "XPT.zip")
+file.part2 = paste0(2011:2016, "/files/", "LLCP", 2011:2016, "XPT.zip")
+file.part = c(file.part1, file.part2)
+file.strings = paste0("https://www.cdc.gov/brfss/annual_data/", file.part)
 
-sleepPerState = with(brfss, tapply(SLEPTIM1, X_STATE, mean, na.rm = T))[-c(52:54)]
+for(i in 1:length(years)) download.file(file.strings[i], paste0("./data/comm_fairfax/original/BRFSS/brffs", years[i], ".zip"))
 
-sleepPerState = data.frame(state = tolower(statefips$state[match(statefips$statefips, as.numeric(names(sleepPerState))) ]), avgsleep = sleepPerState)
-mutate(sleepPerState, state = state.fips)
-rownames(sleepPerState) = NULL
+for(i in 1:length(years)) unzip(paste0("./data/comm_fairfax/original/BRFSS/brffs", years[i], ".zip"), exdir = "./data/comm_fairfax/original/BRFSS/")
 
+data.files = list.files("./data/comm_fairfax/original/BRFSS/")
 
-stateMapData = merge(map_data("state"), sleepPerState, by.x = "region", by.y = "state")
-dim(stateMapData)
+aggregations = vector("list", length(years))
 
-midpt = mean(sleepPerState$avgsleep)
-ggplot() + geom_polygon(data = stateMapData, aes(x=long, y = lat, group = group, fill = avgsleep)) +
-    coord_fixed(1.3) +
-    scale_fill_gradient2(low = 'blue', mid = 'white', high = 'red', midpoint = midpt)
+for(i in 1:length(years)){
+    # Load in active file
+    print(i)
+    active.file = data.files[i]
+    brfss <- read.xport(paste0("./data/comm_fairfax/original/BRFSS/", active.file))
+
+    # Aggregate BMI by state
+    column = grep("bmi", colnames(brfss), ignore.case = T)[1]
+    rows = brfss[, column] < 9999
+
+    bmi = tapply(brfss[rows,column], brfss$X_STATE[rows], mean)/100
+    aggregations[[i]] = data.frame(state = as.numeric(names(bmi)), year = years[i], bmi = bmi)
+    rm(brfss)
+}
+
+bmiStateYear = data.frame(state = numeric(0), year = numeric(0), bmi = numeric(0))
+
+for(i in 1:length(years)) bmiStateYear = rbind(bmiStateYear, aggregations[[i]])
