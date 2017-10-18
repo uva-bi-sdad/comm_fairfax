@@ -10,13 +10,13 @@ brthwght <- assign_colnames(all_tables[[2]], row = 0)
 brthwght[2,2]
 
 for (i in all_tables) {
-    return(i[2,2])
+    return(i[1,2])
 }
 
 
 myfun <- function(all_tables) {
-    return(all_tables[2, 2, drop=FALSE])
+    return(all_tables[1, 2, drop=FALSE])
 }
 
 
-lapply(all_tables, myfun)
+sapply(all_tables, myfun)
