@@ -12,3 +12,11 @@ brthwght[2,2]
 for (i in all_tables) {
     return(i[2,2])
 }
+
+
+myfun <- function(all_tables) {
+    return(all_tables[2, 2, drop=FALSE])
+}
+
+
+lapply(all_tables, myfun)
