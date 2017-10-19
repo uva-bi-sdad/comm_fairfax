@@ -7,22 +7,10 @@ docx_tbl_count(NHIS)
 all_tables <- docx_extract_all_tbls(NHIS)
 brthwght <- assign_colnames(all_tables[[2]], row = 0)
 
+# I want to do this to all the tables in all_tables
 brthwght[2,2]
 
-for (i in all_tables) {
-    return(i[1,2])
-}
-
-
-myfun <- function(all_tables) {
-    return(all_tables[1, 2, drop=FALSE])
-}
-
-# It turns out the problem is that one of the 'tables' is just a character vector
-sapply(all_tables, class)
-# If we just remove that one from the record then it all works fine
-
-# This is a slightly cleaner way to do what myfun does
+# Courtesy of Ian
 descr = data.frame(var_descriptions = sapply(all_tables[-100], "[", 1, 2))
 #write.csv(descr, file = 'output/mcraig4/nhis_descriptions.csv')
 
