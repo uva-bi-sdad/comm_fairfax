@@ -57,7 +57,7 @@ sapply(younger_activity_var, sd, na.rm = TRUE)
 
 ## Want to learn how to automate this process
 # df <- {}
-# for (i in ) {
+# for (i in 1:6) {
 #     older_c_var[older_c_var == i] <- c(0, 0.5, 0.75, 1, 2, 3)
 #
 # }
