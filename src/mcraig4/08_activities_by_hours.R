@@ -1,18 +1,23 @@
+# The car package has a function to recode values
+install.packages("car")
+library(car)
 ys_older_2016 <- read.csv('data/comm_fairfax/original/youth survey data/2016_8_10_12_Youth_Survey.csv')
 ys_younger_2016 <- read.csv('data/comm_fairfax/original/youth survey data/2016_6_Youth_Survey.csv')
 
 older_c_var <- ys_older_2016[, 38:41]
-older_h_var <- ys_oder_2016[, 33:34]
+older_h_var <- ys_older_2016[, 33:34]
 older_sleep_var <- ys_older_2016[, 159:160]
 younger_c_var <- ys_younger_2016[, 44:47]
 younger_h_var <- ys_younger_2016[, 48:49]
 
-older_c_var[older_c_var == 1] <- 0
-older_c_var[older_c_var == 2] <- 0.5
-older_c_var[older_c_var == 3] <- 0.75
-older_c_var[older_c_var == 4] <- 1
-older_c_var[older_c_var == 5] <- 2
-older_c_var[older_c_var == 6] <- 3
+# older_c_var[older_c_var == 1] <- 0
+# older_c_var[older_c_var == 2] <- 0.5
+# older_c_var[older_c_var == 3] <- 0.75
+# older_c_var[older_c_var == 4] <- 1
+# older_c_var[older_c_var == 5] <- 2
+# older_c_var[older_c_var == 6] <- 3
+
+older_c_var <- apply(older_c_var, 2, function(x) {x <- recode(x,"1 = 0; 2 = .5; 3 = .75; 4 = 1; 5 = 2; 6 = 3"); x})
 
 older_h_var[older_h_var == 1] <- 0
 older_h_var[older_h_var == 2] <- 0.75
