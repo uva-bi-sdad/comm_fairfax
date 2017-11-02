@@ -1,5 +1,6 @@
 library(ggplot2)
 library(maps)
+library(dplyr)
 
 county_obesity <- read.csv('data/comm_fairfax/working/mcraig4/health_usda.csv', stringsAsFactors = FALSE)
 counties <- map_data("county")
