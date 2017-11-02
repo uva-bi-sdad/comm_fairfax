@@ -5,6 +5,8 @@ library(maps)
 
 county_obesity <- read.csv('data/comm_fairfax/working/mcraig4/health_usda.csv', stringsAsFactors = FALSE)
 counties <- map_data("county")
+county_obesity$County[1803] = "dona ana"
+county_obesity$County = tolower(county_obesity$County)
 
 obesity.map <- left_join(counties, county_obesity, by = c("subregion" = "County"))
 
