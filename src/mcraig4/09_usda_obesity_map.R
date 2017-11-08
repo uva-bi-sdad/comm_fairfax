@@ -22,10 +22,9 @@ state.fips$polyname[56:60] = "washington"
 counties_st_ab <- left_join(counties, state.fips, by = c("region" = "polyname"))
 
 # Merge on two variables so counties with the same name correspond to the right state
-# This data is not usable for ggplot2
-# Need to figure out how to get it into map_data()
+# Got line 28 from looking through ?map_data
 obesity.map <- merge(counties_st_ab, county_obesity, by.x = c("subregion", "abb"), by.y = c("County", "State"))
-
+obesity.map <- obesity.map[order(obesity.map$order), ]
 
 MAP1<-(ggplot() +
            geom_polygon(data=obesity.map, aes(x=long, y=lat, group=group, fill=PCT_OBESE_ADULTS13), color="black", size=.25) +
@@ -35,4 +34,12 @@ MAP1<-(ggplot() +
 plot(MAP1)
 
 # Make an additional VA Map
-va_obesity <- subset(county_obesity, county_obesity$State == "VA")
+va_obesity <- subset(obesity.map, obesity.map$abb == "VA")
+VA_counties <- subset(counties, counties$region == "virginia")
+
+VA_MAP<-(ggplot() +
+           geom_polygon(data=va_obesity, aes(x=long, y=lat, group=group, fill=PCT_OBESE_ADULTS13), color="black", size=.25) +
+           geom_polygon(data=VA_counties, aes(x=long, y=lat, group=group), fill=NA, color="gray48", size=.25) +
+           scale_fill_gradient(low = 'lightskyblue1', high = 'mediumblue'))
+
+plot(VA_MAP)
