@@ -2,15 +2,17 @@
 ## This code allows you to produce a map on the county levels for each table      ##
 ## looked at from the USDA DataDownload                                           ##
 ##                                                                                ##
-## To produce the maps for the table you are looking at, change line 22 to the    ##
+## To produce the maps for the table you are looking at, change line 24 to the    ##
 ## path of csv you want to use                                                    ##
 ##                                                                                ##
 ## Assign it a name                                                               ##
 ##                                                                                ##
-## Change lines 27-32 to get your dataframe into usable format                    ##
+## Change lines 29-34 to get your dataframe into usable format                    ##
 ##                                                                                ##
-## Change to the name of your_csv in line 51 of the merge, and also change the by ##
+## Change to the name of your_csv in line 53 of the merge, and also change the by ##
 ## the the appropriate column names                                               ##
+##                                                                                ##
+## In ggplot at the bottom (lines 57 & 69), change fill to the variable you want  ##
 ##                                                                                ##
 ## Run the code, and it everything else should be automatic                       ##
 ####################################################################################
