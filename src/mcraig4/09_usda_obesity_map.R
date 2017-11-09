@@ -9,6 +9,10 @@ data("state.fips")
 # Minor changes to get county_obesity into usable form
 county_obesity$County[1803] = "dona ana"
 county_obesity$County = tolower(county_obesity$County)
+# Have to get rid of the . behind counties with the name like St. Mary's
+county_obesity$County = gsub('\\.','',county_obesity$County)
+county_obesity$County = gsub("'",'', county_obesity$County)
+county_obesity$County = gsub("\\s",'', county_obesity$County)
 # Minor changes to get state.fips into usable form
 state.fips$polyname[20:22] = "massachusetts"
 state.fips$polyname[23:24] = "michigan"
@@ -16,6 +20,10 @@ state.fips$polyname[34:37] = "new york"
 state.fips$polyname[38:40] = "north carolina"
 state.fips$polyname[53:55] = "virginia"
 state.fips$polyname[56:60] = "washington"
+# Minor changes to get counties in working form
+counties$subregion = gsub('\\.','',counties$subregion)
+counties$subregion = gsub("'",'', counties$subregion)
+counties$subregion = gsub("\\s",'', counties$subregion)
 
 # Join counties and state.fips
 # Need the state abbreviation from the stat.fips frame
@@ -29,7 +37,8 @@ obesity.map <- obesity.map[order(obesity.map$order), ]
 MAP1<-(ggplot() +
            geom_polygon(data=obesity.map, aes(x=long, y=lat, group=group, fill=PCT_OBESE_ADULTS13), color="black", size=.25) +
            geom_polygon(data=counties, aes(x=long, y=lat, group=group), fill=NA, color="gray48", size=.25) +
-           scale_fill_gradient(low = 'lightskyblue1', high = 'mediumblue'))
+           scale_fill_gradient(low = 'lightskyblue1', high = 'mediumblue') +
+           coord_fixed(1.3))
 
 plot(MAP1)
 
