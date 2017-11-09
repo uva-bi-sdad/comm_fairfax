@@ -19,7 +19,7 @@ library(ggplot2)
 library(maps)
 library(dplyr)
 
-your_csv <- read.csv('data/comm_fairfax/working/mcraig4/health_usda.csv', stringsAsFactors = FALSE)
+your_csv <- read.csv('data/comm_fairfax/working/usda_data/health_usda.csv', stringsAsFactors = FALSE)
 counties <- map_data("county")
 data("state.fips")
 
