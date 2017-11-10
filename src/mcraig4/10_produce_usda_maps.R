@@ -83,3 +83,39 @@ VA_MAP<-(ggplot() +
           text = element_text(size = 20))
 
 plot(VA_MAP)
+
+# Here I'm combining the functionality of the previous two map functions into a single wrapper function. This will cut down on the number of things needed to change to plot new variables and new regions.
+
+# here, colname is a string giving the name of the column with which to fill. state is a string giving the state abberviation, such as 'VA' or 'CA'. If plot = T it will plot the map, if plot = F it saves the ggplot() object and returns it
+
+plot.usda = function(data, colname, state, plot = T, title){
+
+    limits = range(data[,colname], na.rm = T)
+    breaks = round(seq(min(data[,colname], na.rm = T), max(data[,colname], na.rm = T), length = 5), 1)
+    if(missing(title)) title = colname
+    if(!missing(state)) data = subset(data, obesity.map$abb == state)
+
+    usda.map = ggplot() +
+               geom_polygon(data=data, aes(x=long, y=lat, group=group, fill=data[,colname]), color="black", size=.25) +
+               geom_polygon(data=data, aes(x=long, y=lat, group=group), fill=NA, color="gray48", size=.25) +
+               scale_fill_gradient(low = "#E69F00", high = "#56B4E9", limits = limits, breaks = breaks) +
+               coord_fixed(1.3) +
+        labs(title = title, fill = colname) +
+        theme(axis.title=element_blank(),
+              axis.text=element_blank(),
+              axis.ticks=element_blank(),
+              text = element_text(size = 20))
+
+    if(plot) {
+        plot(usda.map)
+    }else{
+        return(usda.map)
+    }
+}
+
+plot.usda(obesity.map, "PCT_OBESE_ADULTS13")
+plot.usda(obesity.map, "PCT_OBESE_ADULTS13", "VA")
+va.map = plot.usda(obesity.map, "PCT_OBESE_ADULTS13", "VA", plot = F)
+
+plot.usda(obesity.map, "PCT_OBESE_ADULTS08")
+plot.usda(obesity.map, "PCT_OBESE_ADULTS08", "CA")
