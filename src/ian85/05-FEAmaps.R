@@ -70,7 +70,7 @@ plot.usda = function(data, colname, state, plot = T, title){
     limits = range(data[,colname], na.rm = T)
     breaks = round(seq(min(data[,colname], na.rm = T), max(data[,colname], na.rm = T), length = 5), 1)
     if(missing(title)) title = colname
-    if(!missing(state)) data = subset(data, obesity.map$abb == state)
+    if(!missing(state)) data = subset(data, data$abb == state)
 
     usda.map = ggplot() +
         geom_polygon(data=data, aes(x=long, y=lat, group=group, fill=data[,colname]), color="black", size=.25) +
@@ -95,8 +95,16 @@ plot.usda = function(data, colname, state, plot = T, title){
 
 fea.data = read.clean.fea.data(data.dir, fea.tables, 3)
 fea.map.data = merge.maps.and.data(fea.data)
+plot.usda(fea.map.data, "PCT_OBESE_ADULTS08", "VA")
+
 fea.cor = cor(fea.data[,-c(1:3)], use = 'pair')
 image(fea.cor)
-
 colnames(fea.data)
-plot.usda(fea.map.data, "PCT_OBESE_ADULTS13")
+
+
+
+
+
+
+
+
