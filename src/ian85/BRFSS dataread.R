@@ -14,7 +14,7 @@ for(i in 1:length(years)) download.file(file.strings[i], paste0("./data/comm_fai
 
 for(i in 1:length(years)) unzip(paste0("./data/comm_fairfax/original/BRFSS/brffs", years[i], ".zip"), exdir = "./data/comm_fairfax/original/BRFSS/")
 
-data.files = list.files("./data/comm_fairfax/original/BRFSS/")
+data.files = list.files("./data/comm_fairfax/original/BRFSS/", pattern = ".[Xx][Pp][Tt]")
 
 aggregations = vector("list", length(years))
 
@@ -36,3 +36,5 @@ for(i in 1:length(years)){
 bmiStateYear = data.frame(state = numeric(0), year = numeric(0), bmi = numeric(0))
 
 for(i in 1:length(years)) bmiStateYear = rbind(bmiStateYear, aggregations[[i]])
+
+write.csv(bmiStateYear, "./data/comm_fairfax/working/bmiStateYearBRFSS.csv", row.names = F)
