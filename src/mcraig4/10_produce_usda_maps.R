@@ -119,6 +119,6 @@ plot.usda = function(data, colname, state, plot = T, title){
 plot.usda(obesity.map, "PCT_OBESE_ADULTS13")
 plot.usda(obesity.map, "PCT_OBESE_ADULTS13", "VA")
 va.map = plot.usda(obesity.map, "PCT_OBESE_ADULTS13", "VA", plot = F)
-
+plot(va.map)
 plot.usda(obesity.map, "PCT_OBESE_ADULTS08")
 plot.usda(obesity.map, "PCT_OBESE_ADULTS08", "CA")
