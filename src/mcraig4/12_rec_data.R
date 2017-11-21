@@ -8,6 +8,7 @@ county_trails <- read_xls('data/comm_fairfax/working/rec_data/county_trails_tabl
 noncounty_parks <- read_xls('data/comm_fairfax/working/rec_data/noncounty_parks.xls')
 noncounty_trails <- read_xls('data/comm_fairfax/working/rec_data/noncounty_trails_table.xls')
 rec_impervious <- read_xls('data/comm_fairfax/working/rec_data/rec_impervious_table.xls')
+colnames(rec_impervious)[3] <- "recimpervious_AREA"
 
 # Join them together to get one table
 join1 <- left_join(rec_impervious, county_parks, by = "GEOID")
