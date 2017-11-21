@@ -27,4 +27,6 @@ colnames(fairfax_bg)[5] <- "ALAND_sq_m"
 
 # Join rec_data with the Fairfax BGs
 rec_data <- left_join(fairfax_bg, cleaned, by = "GEOID")
+# Clean dataframe to change NAs to 0
+rec_data[is.na(rec_data)] <- 0
 #write.csv(rec_data, 'data/comm_fairfax/working/rec_data/rec_data_complete.csv')
