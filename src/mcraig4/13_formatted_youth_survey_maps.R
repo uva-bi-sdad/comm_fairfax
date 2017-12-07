@@ -74,7 +74,7 @@ pyramids.df_12 <- left_join(pyramids.df_12, pyramids_percent_count_12, by = "OBJ
 #EXAMPLE HEATMAP
 #Overall heatmap for Depressive symptoms
 plt <-ggplot(pyramids) +
-    geom_polygon(data = pyramids.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = pyramids.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(TV_3Plus)), color = "black") +
     labs(title = "% of Students watching more than 3 hours of TV") +
     scale_fill_gradient2(low = "#F0E442", high = "#D55E00",
