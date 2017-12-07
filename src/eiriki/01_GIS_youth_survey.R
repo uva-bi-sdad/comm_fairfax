@@ -56,7 +56,8 @@ plot(highSchool, main = "Fairfax High School Boundary")
 
 #accessing the youth survey data
 #take some steps to clean up the data and name the columns
-youth_results <- read_excel("data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
+unzip("/home/git/comm_fairfax/data/comm_fairfax/original.zip")
+youth_results <- read_excel("/home/git/comm_fairfax/data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
                    sheet = "8-10-12 Results by Pyramid")
 youth_results <- youth_results[-1,]
 colnames(youth_results) <- youth_results[1,]

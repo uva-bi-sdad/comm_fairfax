@@ -7,6 +7,9 @@ library(maps)
 library(dplyr)
 library(glmnet)
 library(randomForest)
+library(ggthemes)
+theme_set(theme_fivethirtyeight())
+
 
 # Set the directory, load the fea table names, and start a scheme to index the various files for later looping.
 
@@ -118,7 +121,7 @@ find.var.description = function(varname){
 
 fea.cor = cor(fea.data[,-c(1:3)], use = 'pair')
 image(fea.cor)
-colnames(fea.data)
+colnames(fea.data[,-c(1:3)])
 
 # Look at everything at once
 
@@ -157,6 +160,7 @@ lm1 = lm(y ~ X)
 summary(lm1)
 hist(lm1$residuals)
 plot(lm1$model$y, lm1$fitted.values)
+find.var.description(colnames(X))
 
 # Try random forest
 no.na.rows = !apply(cbind(y, X), 1, anyNA)
@@ -168,14 +172,15 @@ varImpPlot(fea.rf)
 # Amazing results, but hand selecting by correlation ahead of time seems against the spirit of Neyman-Pearson. Let's lasso it.
 # I'm removing some columns due to missingness. I pick a threshold of 'missingness' and remove any columns which have more missingness than that. THe threshold is chosen so that the variables selected above are all retained, except for FMRKT_CREDIT16, which had 28% missing. Every other one is below 5%, which I take to be the threshold.
 
-y = fea.preds[,90]
-Xfull = fea.preds[,-90]
-propNA = apply(Xfull, 2, function(x) sum(is.na(x)/length(x)))
+
+propNA = apply(fea.preds, 2, function(x) sum(is.na(x)/length(x)))
 thresh = .05
-Xcleaned = Xfull[,which(propNA < thresh)]
+Xcleaned = fea.preds[,which(propNA < thresh)]
+Xcleaned = Xcleaned[,!(colnames(Xcleaned) %in% c("PC_SNAPBEN10", "PC_SNAPBEN15"))]
 no.na.rows = !apply(cbind(y, Xcleaned), 1, anyNA)
 ynona = y[no.na.rows]
 Xnona = as.matrix(Xcleaned[no.na.rows,])
+dataCounties = all.fea[no.na.rows, 1:3]
 
 lasso1 = cv.glmnet(Xnona,ynona)
 
@@ -184,7 +189,7 @@ lasso1 = cv.glmnet(Xnona,ynona)
 # Bootstrap a lasso, keeping track of which variables make it in.
 
 prop.in.model = numeric(ncol(Xnona))
-B = 2000
+B = 5000
 n = length(ynona)
 Sys.time()
 for(j in 1:B){
@@ -193,7 +198,7 @@ for(j in 1:B){
     beta.col = with(fit.en, which(lambda == lambda.1se)) # finds the row corresponding to the lambda 1se above the best cv
     in.model = (fit.en$glmnet.fit$beta[,beta.col] > 0)
     prop.in.model = prop.in.model + in.model
-    if(j %% 100 == 0) {
+    if(j %% 1000 == 0) {
         print(j)
         print(Sys.time())
     }
@@ -206,10 +211,18 @@ names = colnames(Xnona)[o]
 prop.in.model = prop.in.model[o]
 names(prop.in.model) = names
 
-nvars = 30
+nvars = 18
 plot.dat = prop.in.model[1:nvars]
 dotchart(rev(plot.dat), main = '', xlim = c(0, 1))
 find.var.description(names(prop.in.model)[1:nvars])
 
+# Retain the top 18 variables, since they all are in more than 80% of the time
+
+Xtrim = scale(Xnona[,colnames(Xnona) %in% names[1:18]])
+
+lm2 = lm(ynona ~ Xtrim)
+summary(lm2)
+hist(lm2$residuals)
+plot(lm2$model$y, lm2$fitted.values)
 
 
