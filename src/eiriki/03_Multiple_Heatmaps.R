@@ -23,7 +23,7 @@ library(gridExtra)
 
 
 #Accessing the survey table
-HS_Pyramid_Report <- read_excel("~/git/lab/comm_fairfax/data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
+HS_Pyramid_Report <- read_excel("~/git/comm_fairfax/data/comm_fairfax/working/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
                                 sheet = "8-10-12 Results by Pyramid")
 
 #Making the new data table for the specific catergories

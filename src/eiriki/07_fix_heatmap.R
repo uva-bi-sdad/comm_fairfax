@@ -60,7 +60,7 @@ plot(highSchool, main = "Fairfax High School Boundary")
 #accessing the youth survey data
 #take some steps to clean up the data and name the columns
 #Accessing the survey table
-HS_Pyramid_Report <- read_excel("~/git/lab/comm_fairfax/data/comm_fairfax/original/2023 Supplemental Analysis by Pyramid Report__GIS.xlsx",
+HS_Pyramid_Report <- read_excel("~/git/comm_fairfax/data/comm_fairfax/working/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
                                 sheet = "8-10-12 Results by Pyramid")
 
 #Making the new data table for the specific catergories
@@ -79,8 +79,8 @@ HS_Pyramid_Report1 <- HS_Pyramid_Report1[-1,]
 #we only select the columns most related to mental health issues
 HS_Pyramid_Report1_mh <- HS_Pyramid_Report1[c('Pyramid_Number', 'Pyramid', 'Demographic', 'Depressive_Symptoms',
                                               'Suicide_Consider','Suicide_Attempt','Stress_Low','Stress_Medium','Stress_High',
-                                              'Binge_Drinking','BulliedVic_School','BulliedVic_Not_School','Cigarette_23',
-                                              'Marijuana_23','Physical_Activity_None','Physical_Activity_Daily',
+                                              'Binge_Drinking','BulliedVic_School','BulliedVic_Not_School','Cigarette_30',
+                                              'Marijuana_30','Physical_Activity_None','Physical_Activity_Daily',
                                               'Extracurricular_Available','Extracurricular_Regularly','Fruit_Veg_5','Cyberbullying_SchoolVictim',
                                               'Cyberbullying_SchoolAggressor','Sleep_4or less', 'Sleep_6','Parent_Help_Available','Adults_Talk','Gratitude','Food_Insecurity')]
 #we only select the rows where they give us the overall score of the pyramid
