@@ -19,7 +19,7 @@ library(sp)
 library(readxl)
 library(gridExtra)
 library(grid)
-library(ggrepel)
+#library(ggrepel)
 
 #~~~~~~~~~~~start copying the geographic code from zarni for GIS
 mgmap <- get_map(location=c(-77.7173, 38.5976, -76.8686, 39.0682), source = "google", color = "bw")
