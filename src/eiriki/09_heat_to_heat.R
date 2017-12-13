@@ -60,7 +60,7 @@ plot(highSchool, main = "Fairfax High School Boundary")
 #accessing the youth survey data
 #take some steps to clean up the data and name the columns
 #Accessing the survey table
-HS_Pyramid_Report <- read_excel("~/git/lab/comm_fairfax/data/comm_fairfax/original/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
+HS_Pyramid_Report <- read_excel("~/git/comm_fairfax/data/comm_fairfax/working/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
                                 sheet = "8-10-12 Results by Pyramid")
 
 #Making the new data table for the specific catergories
@@ -119,7 +119,7 @@ centroids.df <- left_join(centroids.df, highSchool_percent_count, by =c("id"= "P
 #Overall heatmap for Depressive symptoms and food security
 #make the same heatmap as before but hide all elements so it's legible
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Depressive_Symptoms)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
@@ -133,7 +133,7 @@ plt <-ggplot(highSchool) +
                                        ), color = "black", size = 4, angle=35, vjust = -.15)
 
 plt2 <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Food_Insecurity)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 18.99,
                          guide = guide_colourbar(title = "Percent")) +
@@ -149,7 +149,7 @@ both1 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students 
                                                            Food Insecurity', gp=gpar(fontsize=20)))
 ###doing depression with physical none
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Depressive_Symptoms)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
@@ -163,7 +163,7 @@ plt <-ggplot(highSchool) +
     ), color = "black", size = 4, angle=35, vjust = -.15)
 
 plt2 <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Physical_Activity_None)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 13.46,
                          guide = guide_colourbar(title = "Percent")) +
@@ -179,7 +179,7 @@ both2 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students 
                                                            No Physical Activity', gp=gpar(fontsize=20)))
 #doing depression vs parent help
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Depressive_Symptoms)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
@@ -193,7 +193,7 @@ plt <-ggplot(highSchool) +
     ), color = "black", size = 4, angle=35, vjust = -.15)
 
 plt2 <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Parent_Help_Available)), color = "black") +
     scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 79.75,
                          guide = guide_colourbar(title = "Percent")) +
@@ -209,7 +209,7 @@ both3 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students 
                                                            Parent Help Available', gp=gpar(fontsize=20)))
 #doing depression vs extrareg
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Depressive_Symptoms)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
@@ -223,7 +223,7 @@ plt <-ggplot(highSchool) +
     ), color = "black", size = 4, angle=35, vjust = -.15)
 
 plt2 <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Extracurricular_Regularly)), color = "black") +
     scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 72.06,
                          guide = guide_colourbar(title = "Percent")) +
@@ -245,7 +245,7 @@ both4 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students 
 
 #experimenting
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Depressive_Symptoms)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
@@ -259,7 +259,7 @@ plt <-ggplot(highSchool) +
     ), color = "black", size = 4, angle=35, vjust = -.15)
 
 plt2 <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Adults_Talk)), color = "black") +
     scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 40,
                          guide = guide_colourbar(title = "Percent")) +
@@ -276,7 +276,7 @@ both5 <- grid.arrange(plt,plt2, ncol = 2, top = textGrob('% of Overall Students 
 
 #experimenting
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Depressive_Symptoms)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
@@ -290,7 +290,7 @@ plt <-ggplot(highSchool) +
     ), color = "black", size = 4, angle=35, vjust = -.15)
 
 plt2 <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Gratitude)), color = "black") +
     scale_fill_gradient2(low = '#fd0000', mid = '#f5f671', high = '#19bd00', midpoint = 91,
                          guide = guide_colourbar(title = "Percent")) +
