@@ -39,15 +39,12 @@ rgmaprgb
 
 setwd("~/sdal/projects/limbo/fairfax_alerts/")
 #County Shape File
-county <- readShapePoly("GISData/Fairfax_County_Border/Fairfax_County_Border.shp",
-                        proj4string=CRS('+proj=longlat +ellps=WGS84'))
+county <- readOGR("GISData/Fairfax_County_Border/Fairfax_County_Border.shp")
 #Zip Shape File
-zip <- readShapePoly("GISData/ZIP_Codes/ZIP_Codes.shp",
-                     proj4string=CRS('+proj=longlat +ellps=WGS84'))
+zip <- readOGR("GISData/ZIP_Codes/ZIP_Codes.shp")
 
 #High School Shape File
-highSchool <- readShapePoly("GISData/High_School_Pyramids/High_School_Attendance_Areas.shp",
-                            proj4string=CRS('+proj=longlat +ellps=WGS84'))
+highSchool <- readOGR("GISData/High_School_Pyramids/High_School_Attendance_Areas.shp")
 
 #Convert Everything to the coordinate system for the raster map
 county <- spTransform(county,rgmaprgb@crs)
@@ -60,7 +57,7 @@ plot(highSchool, main = "Fairfax High School Boundary")
 #accessing the youth survey data
 #take some steps to clean up the data and name the columns
 #Accessing the survey table
-HS_Pyramid_Report <- read_excel("~/git/lab/comm_fairfax/data/comm_fairfax/original/2023 Supplemental Analysis by Pyramid Report__GIS.xlsx",
+HS_Pyramid_Report <- read_excel("/home/sdal/projects/ffx/comm_fairfax/working/2015 Supplemental Analysis by Pyramid Report__GIS.xlsx",
                                 sheet = "8-10-12 Results by Pyramid")
 
 #Making the new data table for the specific catergories
@@ -77,18 +74,17 @@ colnames(HS_Pyramid_Report1) <- HS_Pyramid_Report1[1,]
 HS_Pyramid_Report1 <- HS_Pyramid_Report1[-1,]
 
 #we only select the columns most related to mental health issues
-HS_Pyramid_Report1_mh <- HS_Pyramid_Report1[c('Pyramid_Number', 'Pyramid', 'Demographic', 'Depressive_Symptoms',
+HS_Pyramid_Report1_mh <- HS_Pyramid_Report1[c('Pyramid', 'Demographic', 'Depressive_Symptoms',
                                               'Suicide_Consider','Suicide_Attempt','Stress_Low','Stress_Medium','Stress_High',
-                                              'Binge_Drinking','BulliedVic_School','BulliedVic_Not_School','Cigarette_23',
-                                              'Marijuana_23','Physical_Activity_None','Physical_Activity_Daily',
+                                              'Binge_Drinking','BulliedVic_School','BulliedVic_Not_School','Physical_Activity_None','Physical_Activity_Daily',
                                               'Extracurricular_Available','Extracurricular_Regularly','Fruit_Veg_5','Cyberbullying_SchoolVictim',
                                               'Cyberbullying_SchoolAggressor','Sleep_4or less', 'Sleep_6','Parent_Help_Available','Adults_Talk','Gratitude','Food_Insecurity')]
 #we only select the rows where they give us the overall score of the pyramid
 HS_Pyramid_Report1_mh_overall <- subset(HS_Pyramid_Report1_mh, Demographic == "Overall")
 
 #make all columns numerics
-HS_Pyramid_Report1_mh_overall[,4:27] <- sapply(HS_Pyramid_Report1_mh_overall[4:27], as.numeric)
-HS_Pyramid_Report1_mh_overall[,4:27] <- round(HS_Pyramid_Report1_mh_overall[,4:27], digits = 2)
+HS_Pyramid_Report1_mh_overall[,-c(1, 2)] <- sapply(HS_Pyramid_Report1_mh_overall[-c(1, 2)], as.numeric)
+HS_Pyramid_Report1_mh_overall[,-c(1, 2)] <- round(HS_Pyramid_Report1_mh_overall[,-c(1, 2)], digits = 2)
 
 #for convenience below
 youth_results_mh_overall <- HS_Pyramid_Report1_mh_overall
@@ -130,7 +126,7 @@ bchart <- ggplot(youth_results_mh_overall, aes(x = reorder(Pyramid, -as.numeric(
     scale_y_continuous(name="Percent", breaks = seq(20,32,1),limits=c(20, 32),oob = rescale_none)
 #make the same heatmap as before but hide all elements so it's legible
 plt <-ggplot(highSchool) +
-    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = OBJECTID,
+    geom_polygon(data = highSchool.df, aes(x = long, y = lat, group = group,
                                            fill = as.numeric(Depressive_Symptoms)), color = "black") +
     scale_fill_gradient2(low = '#19bd00', mid = '#f5f671', high = '#fd0000', midpoint = 26,
                          guide = guide_colourbar(title = "Percent")) +
