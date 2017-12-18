@@ -181,9 +181,9 @@ for(i in 1:length(all.cols)){
 
 
 for(i in 1:length(all.cols)){
-    pdf(paste0(plot.out.dir, all.cols[i], "_mapHist.pdf"), height = 10, width = 22)
+    #pdf(paste0(plot.out.dir, all.cols[i], "_mapHist.pdf"), height = 10, width = 22)
     plot(mapHistList[[i]])
-    dev.off()
+    #dev.off()
 }
 
 pairs(scale(select(older, all.cols)), col = viridis(25), pch = 15, cex.labels = 2)
