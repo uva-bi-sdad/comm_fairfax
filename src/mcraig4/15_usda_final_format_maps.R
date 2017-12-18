@@ -109,14 +109,14 @@ plot.usda = function(data, colname, state, plot = T, title){
         coord_fixed(1.3) +
         labs(x=NULL,
              y=NULL,
-             title= "Price of Soda to National Average, 2010",
+             title= "Poverty Rate, 2015",
              subtitle="Data: 2016 USDA Economic Research Service",
              caption = "Geometry: Virginia Counties") +
         theme_map() +
         scale_fill_viridis(
             option = "viridis",
             direction = -1,
-            name = "Ratio",
+            name = "Percent",
             guide = guide_colorbar(
                 ticks = F,
                 nbins=100,
@@ -145,8 +145,8 @@ plot.usda = function(data, colname, state, plot = T, title){
 # Load the cleaned data files with our helper functions
 # here, 3 indicates the health table
 
-fea.data = read.clean.fea.data(data.dir, fea.tables, 6)
+fea.data = read.clean.fea.data(data.dir, fea.tables, 8)
 fea.map.data = merge.maps.and.data(fea.data)
-# jpeg("output/USDA Maps/final_format/soda_price10.jpg", width = 1200, height = 800)
-plot.usda(fea.map.data, "SODA_PRICE10", "VA")
+# jpeg("output/USDA Maps/final_format/povrate15.jpg", width = 1200, height = 800)
+plot.usda(fea.map.data, "POVRATE15", "VA")
 # dev.off()
