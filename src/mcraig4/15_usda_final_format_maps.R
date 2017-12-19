@@ -147,6 +147,25 @@ plot.usda = function(data, colname, state, plot = T, title){
 
 fea.data = read.clean.fea.data(data.dir, fea.tables, 8)
 fea.map.data = merge.maps.and.data(fea.data)
+
+outPath = "output/USDA Maps/final_format/"
+pictureNames = c("name1", "name2")
+columnNames = c("POVRATES15", "colname2")
+
+for(i in 1:no.paths){
+    jpeg(paste0(outPath, pictureNames[i]), width = 1200, height = 800)
+    plot.usda(fea.map.data, columnNames[i], "VA")
+    dev.off()
+}
+
+
 # jpeg("output/USDA Maps/final_format/povrate15.jpg", width = 1200, height = 800)
 plot.usda(fea.map.data, "POVRATE15", "VA")
 # dev.off()
+
+
+
+
+
+
+
