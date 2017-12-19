@@ -18,6 +18,9 @@ theme_map <- function(...) {
     theme_minimal() +
         theme(
             text=element_text(family="sans", color="#22211d"),
+            plot.title = element_text(size=20),
+            plot.subtitle = element_text(size=17),
+            plot.caption = element_text(size=17),
             axis.line=element_blank(),
             axis.text.x=element_blank(),
             axis.text.y=element_blank(),
@@ -38,14 +41,18 @@ theme_map <- function(...) {
 
 
 sixth <- read.csv('data/comm_fairfax/working/formatted_youth_survey/2015_supplemental_6_pyramid.csv')
-older <- read.csv('data/comm_fairfax/working/formatted_youth_survey/2015_supplemental_8_10_12_pyramid.csv')
+older <- read.csv('data/comm_fairfax/working/formatted_youth_survey/2015_supplemental_8_10_12_pyramid.csv', stringsAsFactors = F)
 
 pyramids <- readOGR('data/comm_fairfax/working/formatted_youth_survey/High_School_Pyramids',
                     "High_School_Attendance_Areas")
 
 #joining the survey results to the pyramids map data for all grade levels
 
-pyramidsPercentCount <- subset(older, Demographic == "Overall") %>% left_join(pyramids@data[,1:2], by = c("Pyramid" = "SCHOOL_NAM"))
+older %>% subset(Demographic == "Overall") %>%
+    filter(Pyramid != "THOMAS JEFFERSON") %>%
+    left_join(pyramids@data[,1:2], by = c("Pyramid" = "SCHOOL_NAM"))  ->
+    pyramidsPercentCount
+
 
 #Convert Polygon information into data frame is what fortify does
 pyramids@data$id <- rownames(pyramids@data)
@@ -54,11 +61,13 @@ pyramids.points <- fortify(pyramids)
 
 
 pyramids.points %>%
-    left_join(select(pyramids@data, one_of("id", "OBJECTID")), by = "id") %>%
+    left_join(dplyr::select(pyramids@data, one_of("id", "OBJECTID")), by = "id") %>%
     left_join(pyramidsPercentCount, by = "OBJECTID") ->
     pyramids.df
 
 rm(pyramids.points)
+
+# remove thomas jefferson
 
 # Load in the locations of the high schools themselves.
 
@@ -84,7 +93,10 @@ for(i in 1:length(all.cols)){
              title= titles[i],
              subtitle="Data: 2015 Fairfax Youth Survey; HS locations from Google maps.",
              caption = "Geometry: Fairfax County High School Pyramid Boundaries, Points Denote High Schools") +
-        theme(legend.position = "bottom") +
+        theme(legend.position = "bottom",
+              axis.text = element_text(size = 15),
+              axis.title = element_text(size = 20),
+              title = element_text(size = 20))
         scale_fill_viridis(
             option = "viridis",
             direction = -1,
@@ -128,6 +140,14 @@ ffx_map <- get_map(location = c(long = -77.269848, lat = 38.836325),zoom = 10, c
 
 mapHistList = vector("list", length(all.cols))
 
+# Get rid of all caps in pyramid name. Thanks to Josh for this handy function
+
+test_names <- pyramidsPercentCount$Pyramid
+s <- strsplit(test_names," ")
+first_cap = function(s) paste( toupper(substring(s,1,1)), tolower(substring(s,2)), sep="", collapse=" ")
+pyramidsPercentCount$Pyramid = sapply(s,first_cap)
+
+
 for(i in 1:length(all.cols)){
     bchart <-
         ggplot(pyramidsPercentCount, aes(x = reorder(Pyramid, -get(all.cols[i])),  y = get(all.cols[i]), fill = get(all.cols[i]))) +
@@ -146,7 +166,6 @@ for(i in 1:length(all.cols)){
         scale_y_continuous(name="Percent")
 
     plt = ggmap(ffx_map) +
-        coord_fixed(ratio = .7) +
         coord_cartesian(xlim=range(pyramids.df$long) + c(-.01, .01), ylim=range(pyramids.df$lat) + c(-.01, .01)) +
         geom_polygon(data = pyramids.df, aes(x = long, y = lat, group = group, fill = get(all.cols[i])), color = "black", alpha = .9, size = .4) +
         geom_point(data = data.frame(hsLocations), aes(x = long, y = lat), shape = 21, colour = "black", fill = "white", size = 2) +
@@ -156,7 +175,11 @@ for(i in 1:length(all.cols)){
              y=NULL,
              subtitle="Data: 2015 Fairfax Youth Survey; HS locations from Google maps.",
              caption = "Geometry: Fairfax County High School Pyramid Boundaries, Points Denote High Schools") +
-        theme(legend.position = "bottom") +
+        theme(legend.position = c(0.23, 0.08),
+              legend.background = element_rect(fill = "transparent"),
+              axis.text = element_text(size = 15),
+              axis.title = element_text(size = 20),
+              title = element_text(size = 20)) +
         scale_fill_viridis(
             option = "viridis",
             direction = -1,
@@ -175,21 +198,17 @@ for(i in 1:length(all.cols)){
                 label.position = "bottom"
             ))
 
-    mapHistList[[i]] =grid.arrange(plt, bchart, ncol = 2)
+    mapHistList[[i]] = grid.arrange(plt, bchart, ncol = 2)
+
 }
 
 
 
 for(i in 1:length(all.cols)){
-    pdf(paste0(plot.out.dir, all.cols[i], "_mapHist.pdf"), height = 10, width = 22)
+    pdf(paste0(plot.out.dir, all.cols[i], "_mapHist.pdf"), height = 11, width = 22)
     plot(mapHistList[[i]])
     dev.off()
 }
-
-pairs(scale(select(older, all.cols)), col = viridis(25), pch = 15, cex.labels = 2)
-
-
-cor(select(older, all.cols))
 
 
 

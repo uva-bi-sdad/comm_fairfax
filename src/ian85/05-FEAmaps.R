@@ -102,6 +102,8 @@ fea.data = read.clean.fea.data(data.dir, fea.tables, 3)
 fea.map.data = merge.maps.and.data(fea.data)
 plot.usda(fea.map.data, "PCT_OBESE_ADULTS08", "VA")
 
+
+
 # Also load in the environmental atlas variables for interpretability of the column names
 fea.vars = read.csv("./data/comm_fairfax/working/usda_data/env atlas variables.csv", stringsAsFactors = F)
 
