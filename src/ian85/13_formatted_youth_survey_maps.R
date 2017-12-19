@@ -205,9 +205,13 @@ for(i in 1:length(all.cols)){
 
 
 for(i in 1:length(all.cols)){
+<<<<<<< HEAD
     pdf(paste0(plot.out.dir, all.cols[i], "_mapHist.pdf"), height = 11, width = 22)
+=======
+    #pdf(paste0(plot.out.dir, all.cols[i], "_mapHist.pdf"), height = 10, width = 22)
+>>>>>>> fa476cbdc00d286b4aa34ee9555b316af4f11a7c
     plot(mapHistList[[i]])
-    dev.off()
+    #dev.off()
 }
 
 
